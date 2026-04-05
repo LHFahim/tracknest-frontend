@@ -5,7 +5,7 @@ This is the frontend of the Lost & Found Management System.
 It is built using Next.js and provides the user interface for reporting and searching lost and found items.
 
 # Features 
-User registration and login UI <br>
+* User registration and login UI <br>
 Report lost item form <br>
 Report found item form <br>
 Dashboard view <br>
