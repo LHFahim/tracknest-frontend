@@ -6,23 +6,23 @@ It is built using Next.js and provides the user interface for reporting and sear
 
 # Features 
 User registration and login UI <br>
-Report lost item form
-Report found item form
-Dashboard view
-Display matching results
+Report lost item form <br>
+Report found item form <br>
+Dashboard view <br>
+Display matching results <br>
 
 # Technologies Used
-Next.js
-React
+Next.js <br>
+React <br>
 
 # Installation
 
 # Screenshots
 
 # Team Info
-Lutful Hassan Fahim-12268790
-Md Raqibur Rahman Roni-12279329
-Aman Sharma-12299445
-Gihani Shanika De Silva Balage Don-12267157
+1. Lutful Hassan Fahim-12268790 <br>
+2. Md Raqibur Rahman Roni-12279329 <br>
+3. Aman Sharma-12299445 <br>
+4. Gihani Shanika De Silva Balage Don-12267157 <br>
 
 
