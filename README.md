@@ -6,14 +6,14 @@ It is built using Next.js and provides the user interface for reporting and sear
 
 # Features 
 * User registration and login UI <br>
-Report lost item form <br>
-Report found item form <br>
-Dashboard view <br>
-Display matching results <br>
+* Report lost item form <br>
+* Report found item form <br>
+* Dashboard view <br>
+* Display matching results <br>
 
 # Technologies Used
-Next.js <br>
-React <br>
+* Next.js <br>
+* React <br>
 
 # Installation
 
