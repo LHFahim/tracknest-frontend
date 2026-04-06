@@ -26,7 +26,12 @@ const formSchema = z.object({
   firstName: z.string().min(1, "This field is required"),
   lastName: z.string().min(1, "This field is required"),
   email: z.email(),
-  phone: z.string().optional(),
+  phone: z
+    .string()
+    .refine((val) => !val || /^\+[1-9]\d{6,14}$/.test(val), {
+      message: "Use international format, e.g. +61412345678",
+    })
+    .optional(),
   password: z.string().min(8, "Minimum length is 8"),
   confirmPassword: z.string().min(8, "Minimum length is 8"),
 });
@@ -44,6 +49,7 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
       confirmPassword: "",
     },
     validators: {
+      onChange: formSchema,
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
@@ -150,7 +156,7 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <Field>
+                  <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                     <Input
                       type="email"
@@ -172,7 +178,7 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <Field>
+                  <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>
                       Phone{" "}
                       <span className="text-muted-foreground font-normal">
@@ -183,6 +189,7 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
                       type="tel"
                       id={field.name}
                       name={field.name}
+                      placeholder="+61412345678"
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                     />
@@ -199,7 +206,7 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <Field>
+                  <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Password</FieldLabel>
                     <Input
                       type="password"
@@ -233,7 +240,7 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <Field>
+                  <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>
                       Confirm Password
                     </FieldLabel>

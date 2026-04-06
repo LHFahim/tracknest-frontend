@@ -36,6 +36,7 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
       password: "",
     },
     validators: {
+      onChange: formSchema,
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {

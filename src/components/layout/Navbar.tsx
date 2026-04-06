@@ -24,6 +24,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ModeToggle } from "./modeToggle";
 
 interface MenuItem {
@@ -36,6 +37,7 @@ interface MenuItem {
 
 interface Navbar1Props {
   className?: string;
+  isLoggedIn?: boolean;
   logo?: {
     url: string;
     src: string;
@@ -65,21 +67,23 @@ const Navbar = ({
   },
   menu = [
     { title: "Home", url: "/" },
-    {
-      title: "About",
-      url: "/about",
-    },
-    {
-      title: "Dashboard",
-      url: "/student-dashboard",
-    },
+    { title: "About", url: "/about" },
   ],
   auth = {
     login: { title: "Login", url: "/login" },
     signup: { title: "Register", url: "/register" },
   },
+  isLoggedIn = false,
   className,
 }: Navbar1Props) => {
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+    router.refresh();
+  };
+
   return (
     <section className={cn("py-4", className)}>
       <div className="container mx-auto px-4">
@@ -107,12 +111,25 @@ const Navbar = ({
           </div>
           <div className="flex gap-2">
             <ModeToggle />
-            <Button asChild variant="outline" size="sm">
-              <Link href={auth.login.url}>{auth.login.title}</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href={auth.signup.url}>{auth.signup.title}</Link>
-            </Button>
+            {isLoggedIn ? (
+              <>
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/">Dashboard</Link>
+                </Button>
+                <Button size="sm" variant="destructive" onClick={handleSignOut}>
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button asChild variant="outline" size="sm">
+                  <Link href={auth.login.url}>{auth.login.title}</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link href={auth.signup.url}>{auth.signup.title}</Link>
+                </Button>
+              </>
+            )}
           </div>
         </nav>
 
@@ -155,12 +172,25 @@ const Navbar = ({
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <Link href={auth.login.url}>{auth.login.title}</Link>
-                    </Button>
-                    <Button asChild>
-                      <Link href={auth.signup.url}>{auth.signup.title}</Link>
-                    </Button>
+                    {isLoggedIn ? (
+                      <>
+                        <Button asChild variant="outline">
+                          <Link href="/">Dashboard</Link>
+                        </Button>
+                        <Button variant="destructive" onClick={handleSignOut}>
+                          Sign Out
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button asChild variant="outline">
+                          <Link href={auth.login.url}>{auth.login.title}</Link>
+                        </Button>
+                        <Button asChild>
+                          <Link href={auth.signup.url}>{auth.signup.title}</Link>
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>
