@@ -16,14 +16,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { authClient } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,11 +23,12 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 const formSchema = z.object({
-  name: z.string().min(1, "This field is required"),
+  firstName: z.string().min(1, "This field is required"),
+  lastName: z.string().min(1, "This field is required"),
   email: z.email(),
+  phone: z.string().optional(),
   password: z.string().min(8, "Minimum length is 8"),
   confirmPassword: z.string().min(8, "Minimum length is 8"),
-  role: z.enum(["STUDENT"]),
 });
 
 export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
@@ -43,11 +36,12 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
 
   const form = useForm({
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
+      phone: "",
       password: "",
       confirmPassword: "",
-      role: "",
     },
     validators: {
       onSubmit: formSchema,
@@ -61,22 +55,29 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
       const toastId = toast.loading("Creating account...");
 
       try {
-        const { data, error } = await authClient.signUp.email({
-          email: value.email,
-          password: value.password,
-          name: value.name,
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            firstName: value.firstName,
+            lastName: value.lastName,
+            email: value.email,
+            phone: value.phone || undefined,
+            password: value.password,
+          }),
         });
 
-        if (error) {
-          toast.error(error.message ?? "Something went wrong.", {
-            id: toastId,
-          });
+        const data = await res.json();
+
+        if (!res.ok) {
+          toast.error(data.message ?? "Registration failed.", { id: toastId });
           return;
         }
 
         toast.success("Account created successfully", { id: toastId });
-        router.push("/login");
-      } catch (err) {
+        router.push("/");
+        router.refresh();
+      } catch {
         toast.error("Something went wrong, please try again.", { id: toastId });
       }
     },
@@ -100,13 +101,35 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
         >
           <FieldGroup>
             <form.Field
-              name="name"
+              name="firstName"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>First Name</FieldLabel>
+                    <Input
+                      type="text"
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
+            <form.Field
+              name="lastName"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Last Name</FieldLabel>
                     <Input
                       type="text"
                       id={field.name}
@@ -131,6 +154,33 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
                     <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                     <Input
                       type="email"
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
+            <form.Field
+              name="phone"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field>
+                    <FieldLabel htmlFor={field.name}>
+                      Phone{" "}
+                      <span className="text-muted-foreground font-normal">
+                        (optional)
+                      </span>
+                    </FieldLabel>
+                    <Input
+                      type="tel"
                       id={field.name}
                       name={field.name}
                       value={field.state.value}
@@ -197,39 +247,6 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
                     )}
-                  </Field>
-                );
-              }}
-            />
-            <form.Field
-              name="role"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field orientation="responsive" data-invalid={isInvalid}>
-                    <FieldLabel htmlFor="register-role-select">
-                      I am a
-                    </FieldLabel>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                    <Select
-                      name={field.name}
-                      value={field.state.value}
-                      onValueChange={field.handleChange}
-                    >
-                      <SelectTrigger
-                        id="register-role-select"
-                        aria-invalid={isInvalid}
-                        className="min-w-[120px]"
-                      >
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent position="item-aligned">
-                        <SelectItem value="STUDENT">Student</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </Field>
                 );
               }}

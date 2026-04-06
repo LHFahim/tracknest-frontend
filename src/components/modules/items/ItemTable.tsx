@@ -1,6 +1,11 @@
 "use client";
 
-import { deleteItem, updateItemStatus } from "@/actions/items.action";
+import {
+  deleteFoundItem,
+  deleteLostItem,
+  updateFoundItemStatus,
+  updateLostItemStatus,
+} from "@/actions/items.action";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,30 +23,36 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IItem, ItemStatus } from "@/types/item.interface";
+import { formatDateTime } from "@/lib/utils";
+import {
+  FoundItemStatus,
+  IFoundItem,
+  ILostItem,
+  LostItemStatus,
+  isLostItem,
+} from "@/types/item.interface";
 import { MoreHorizontalIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const statusVariant: Record<
-  ItemStatus,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  FOUND: "default",
-  LOST: "destructive",
-  CLAIMED: "secondary",
-};
-
-export function ItemTable({ items }: { items: IItem[] }) {
+export function ItemTable({
+  lostItems,
+  foundItems,
+}: {
+  lostItems: ILostItem[];
+  foundItems: IFoundItem[];
+}) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (item: ILostItem | IFoundItem) => {
     const toastId = toast.loading("Deleting item...");
-    setLoadingId(id);
+    setLoadingId(item.id);
 
     try {
-      const res = await deleteItem(id);
+      const res = isLostItem(item)
+        ? await deleteLostItem(item.id)
+        : await deleteFoundItem(item.id);
 
       if (res.error) {
         toast.error(res.error.message, { id: toastId });
@@ -49,32 +60,54 @@ export function ItemTable({ items }: { items: IItem[] }) {
       }
 
       toast.success("Item deleted successfully", { id: toastId });
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong", { id: toastId });
     } finally {
       setLoadingId(null);
     }
   };
 
-  const handleStatusChange = async (id: string, status: ItemStatus) => {
+  const handleLostStatusChange = async (id: string, status: LostItemStatus) => {
     const toastId = toast.loading("Updating status...");
     setLoadingId(id);
 
     try {
-      const res = await updateItemStatus(id, status);
+      const res = await updateLostItemStatus(id, status);
 
       if (res.error) {
         toast.error(res.error.message, { id: toastId });
         return;
       }
 
-      toast.success("Item status updated", { id: toastId });
-    } catch (err) {
+      toast.success("Status updated", { id: toastId });
+    } catch {
       toast.error("Something went wrong", { id: toastId });
     } finally {
       setLoadingId(null);
     }
   };
+
+  const handleFoundStatusChange = async (id: string, status: FoundItemStatus) => {
+    const toastId = toast.loading("Updating status...");
+    setLoadingId(id);
+
+    try {
+      const res = await updateFoundItemStatus(id, status);
+
+      if (res.error) {
+        toast.error(res.error.message, { id: toastId });
+        return;
+      }
+
+      toast.success("Status updated", { id: toastId });
+    } catch {
+      toast.error("Something went wrong", { id: toastId });
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  const allItems: (ILostItem | IFoundItem)[] = [...lostItems, ...foundItems];
 
   return (
     <div className="border rounded-md p-5">
@@ -82,96 +115,165 @@ export function ItemTable({ items }: { items: IItem[] }) {
         <TableHeader>
           <TableRow>
             <TableHead>Title</TableHead>
-            <TableHead>Category</TableHead>
+            <TableHead>Type</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Location</TableHead>
-            <TableHead>Reported by</TableHead>
             <TableHead>Date</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {items.length === 0 ? (
+          {allItems.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={7}
+                colSpan={6}
                 className="text-center py-8 text-muted-foreground"
               >
                 No items found
               </TableCell>
             </TableRow>
           ) : (
-            items.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell className="font-medium">
-                  <Link
-                    href={`/items/${item.id}`}
-                    className="hover:underline underline-offset-4"
-                  >
-                    {item.title}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">
-                    {item.category.charAt(0) +
-                      item.category.slice(1).toLowerCase()}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={statusVariant[item.status]}>
-                    {item.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>{item.location}</TableCell>
-                <TableCell>{item.reporterName ?? "N/A"}</TableCell>
-                <TableCell>
-                  {new Date(item.date).toISOString().split("T")[0]}
-                </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-8"
-                        disabled={loadingId === item.id}
-                      >
-                        <MoreHorizontalIcon />
-                        <span className="sr-only">Open menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem asChild>
-                        <Link href={`/items/${item.id}`}>View details</Link>
-                      </DropdownMenuItem>
-                      {item.status !== "CLAIMED" && (
-                        <DropdownMenuItem
-                          onClick={() =>
-                            handleStatusChange(item.id, "CLAIMED")
-                          }
+            allItems.map((item) => {
+              const lost = isLostItem(item);
+              // ISO date string from backend — e.g. "2024-01-15T00:00:00.000Z"
+              const dateStr = lost ? item.dateLost : item.dateFound;
+              const location = lost ? item.locationLost : item.locationFound;
+
+              return (
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">
+                    <Link
+                      href={`/items/${item.id}`}
+                      className="hover:underline underline-offset-4"
+                    >
+                      {item.title}
+                    </Link>
+                  </TableCell>
+
+                  <TableCell>
+                    <Badge variant={lost ? "destructive" : "default"}>
+                      {lost ? "LOST" : "FOUND"}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell>
+                    <Badge variant="outline">{item.status}</Badge>
+                  </TableCell>
+
+                  <TableCell>{location ?? "—"}</TableCell>
+
+                  <TableCell>
+                    {dateStr ? formatDateTime(dateStr) : "—"}
+                  </TableCell>
+
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8"
+                          disabled={loadingId === item.id}
                         >
-                          Mark as Claimed
+                          <MoreHorizontalIcon />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem asChild>
+                          <Link href={`/items/${item.id}`}>View details</Link>
                         </DropdownMenuItem>
-                      )}
-                      {item.status === "LOST" && (
+
+                        {lost && item.status === LostItemStatus.OPEN && (
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleLostStatusChange(
+                                item.id,
+                                LostItemStatus.CLAIM_REQUESTED
+                              )
+                            }
+                          >
+                            Mark Claim Requested
+                          </DropdownMenuItem>
+                        )}
+                        {lost && item.status === LostItemStatus.CLAIM_REQUESTED && (
+                          <>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleLostStatusChange(
+                                  item.id,
+                                  LostItemStatus.CLAIM_APPROVED
+                                )
+                              }
+                            >
+                              Approve Claim
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleLostStatusChange(
+                                  item.id,
+                                  LostItemStatus.CLAIM_REJECTED
+                                )
+                              }
+                            >
+                              Reject Claim
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                        {lost &&
+                          item.status !== LostItemStatus.CLOSED && (
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleLostStatusChange(
+                                  item.id,
+                                  LostItemStatus.CLOSED
+                                )
+                              }
+                            >
+                              Close
+                            </DropdownMenuItem>
+                          )}
+
+                        {!lost &&
+                          item.status === FoundItemStatus.REPORTED && (
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleFoundStatusChange(
+                                  item.id,
+                                  FoundItemStatus.IN_CUSTODY
+                                )
+                              }
+                            >
+                              Mark In Custody
+                            </DropdownMenuItem>
+                          )}
+                        {!lost &&
+                          item.status === FoundItemStatus.IN_CUSTODY && (
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleFoundStatusChange(
+                                  item.id,
+                                  FoundItemStatus.RETURNED
+                                )
+                              }
+                            >
+                              Mark Returned
+                            </DropdownMenuItem>
+                          )}
+
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          onClick={() => handleStatusChange(item.id, "FOUND")}
+                          variant="destructive"
+                          onClick={() => handleDelete(item)}
                         >
-                          Mark as Found
+                          Delete
                         </DropdownMenuItem>
-                      )}
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        variant="destructive"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              );
+            })
           )}
         </TableBody>
       </Table>

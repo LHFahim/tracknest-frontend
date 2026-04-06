@@ -9,6 +9,8 @@ export default async function ItemViewPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  // Try lost-items first, then found-items
   const { data: item, error } = await itemService.getItemById(id);
 
   if (!item || error?.message === "Item not found.") {
@@ -18,7 +20,7 @@ export default async function ItemViewPage({
   if (error) {
     return (
       <div className="flex flex-col gap-6">
-        <Breadcrumb id={id} title="Error" />
+        <Breadcrumb title="Error" />
         <div className="border rounded-md p-8 text-center text-muted-foreground">
           {error.message}
         </div>
@@ -28,13 +30,13 @@ export default async function ItemViewPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <Breadcrumb id={id} title={item.title} />
+      <Breadcrumb title={item.title} />
       <ItemDetail item={item} />
     </div>
   );
 }
 
-function Breadcrumb({ id, title }: { id: string; title: string }) {
+function Breadcrumb({ title }: { title: string }) {
   return (
     <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
       <Link href="/" className="hover:text-foreground">

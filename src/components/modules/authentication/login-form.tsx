@@ -16,7 +16,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -43,13 +42,16 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
       const toastId = toast.loading("Logging in...");
 
       try {
-        const { data, error } = await authClient.signIn.email({
-          email: value.email,
-          password: value.password,
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: value.email, password: value.password }),
         });
 
-        if (error) {
-          toast.error(error.message ?? "Something went wrong.", {
+        const data = await res.json();
+
+        if (!res.ok) {
+          toast.error(data.message ?? "Something went wrong.", {
             id: toastId,
           });
           return;
@@ -58,7 +60,7 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
         toast.success("Logged in successfully", { id: toastId });
         router.push("/");
         router.refresh();
-      } catch (err) {
+      } catch {
         toast.error("Something went wrong, please try again.", { id: toastId });
       }
     },
