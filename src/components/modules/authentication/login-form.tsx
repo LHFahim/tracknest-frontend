@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -30,13 +31,6 @@ const formSchema = z.object({
 export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
 
-  const handleGoogleLogin = async () => {
-    const data = authClient.signIn.social({
-      provider: "google",
-      callbackURL: "http://localhost:3000",
-    });
-  };
-
   const form = useForm({
     defaultValues: {
       email: "",
@@ -46,12 +40,24 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      const toastId = toast.loading("Logging in");
-
-      // NOTE: login call here
+      const toastId = toast.loading("Logging in...");
 
       try {
-        toast.success("User Logged in Successfully", { id: toastId });
+        const { data, error } = await authClient.signIn.email({
+          email: value.email,
+          password: value.password,
+        });
+
+        if (error) {
+          toast.error(error.message ?? "Something went wrong.", {
+            id: toastId,
+          });
+          return;
+        }
+
+        toast.success("Logged in successfully", { id: toastId });
+        router.push("/");
+        router.refresh();
       } catch (err) {
         toast.error("Something went wrong, please try again.", { id: toastId });
       }
@@ -120,20 +126,29 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
               }}
             />
           </FieldGroup>
+          <div className="mt-2 text-right">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            >
+              Forgot password?
+            </Link>
+          </div>
         </form>
       </CardContent>
-      <CardFooter className="flex flex-col gap-5 justify-end">
+      <CardFooter className="flex flex-col gap-4">
         <Button form="login-form" type="submit" className="w-full">
           Login
         </Button>
-        {/* <Button
-          onClick={() => handleGoogleLogin()}
-          variant="outline"
-          type="button"
-          className="w-full"
-        >
-          Continue with Google
-        </Button> */}
+        <p className="text-sm text-muted-foreground text-center">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/register"
+            className="text-foreground underline underline-offset-4 hover:text-primary"
+          >
+            Sign up
+          </Link>
+        </p>
       </CardFooter>
     </Card>
   );
