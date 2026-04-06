@@ -2,7 +2,12 @@ import { ItemTable } from "@/components/modules/items/ItemTable";
 import { itemService } from "@/services/item.service";
 
 export default async function ItemsPage() {
-  const { data: items, error } = await itemService.getAllItems();
+  const [lostRes, foundRes] = await Promise.all([
+    itemService.getAllLostItems(),
+    itemService.getAllFoundItems(),
+  ]);
+
+  const error = lostRes.error ?? foundRes.error;
 
   return (
     <div className="flex flex-col gap-6">
@@ -18,7 +23,10 @@ export default async function ItemsPage() {
           {error.message}
         </div>
       ) : (
-        <ItemTable items={items ?? []} />
+        <ItemTable
+          lostItems={lostRes.data?.items ?? []}
+          foundItems={foundRes.data?.items ?? []}
+        />
       )}
     </div>
   );

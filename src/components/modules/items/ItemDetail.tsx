@@ -1,6 +1,11 @@
 "use client";
 
-import { deleteItem, updateItemStatus } from "@/actions/items.action";
+import {
+  deleteFoundItem,
+  deleteLostItem,
+  updateFoundItemStatus,
+  updateLostItemStatus,
+} from "@/actions/items.action";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,37 +16,32 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { IItem, ItemStatus } from "@/types/item.interface";
 import { formatDateTime } from "@/lib/utils";
 import {
-  CalendarIcon,
-  MapPinIcon,
-  TagIcon,
-  UserIcon,
-} from "lucide-react";
+  FoundItemStatus,
+  IFoundItem,
+  ILostItem,
+  LostItemStatus,
+  isLostItem,
+} from "@/types/item.interface";
+import { CalendarIcon, MapPinIcon, TagIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const statusVariant: Record<
-  ItemStatus,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  FOUND: "default",
-  LOST: "destructive",
-  CLAIMED: "secondary",
-};
-
-export function ItemDetail({ item }: { item: IItem }) {
+export function ItemDetail({ item }: { item: ILostItem | IFoundItem }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const lost = isLostItem(item);
 
   const handleDelete = async () => {
     const toastId = toast.loading("Deleting item...");
     setIsLoading(true);
 
     try {
-      const res = await deleteItem(item.id);
+      const res = lost
+        ? await deleteLostItem(item.id)
+        : await deleteFoundItem(item.id);
 
       if (res.error) {
         toast.error(res.error.message, { id: toastId });
@@ -50,19 +50,19 @@ export function ItemDetail({ item }: { item: IItem }) {
 
       toast.success("Item deleted", { id: toastId });
       router.push("/items");
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong", { id: toastId });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleStatusChange = async (status: ItemStatus) => {
+  const handleLostStatus = async (status: LostItemStatus) => {
     const toastId = toast.loading("Updating status...");
     setIsLoading(true);
 
     try {
-      const res = await updateItemStatus(item.id, status);
+      const res = await updateLostItemStatus(item.id, status);
 
       if (res.error) {
         toast.error(res.error.message, { id: toastId });
@@ -71,27 +71,82 @@ export function ItemDetail({ item }: { item: IItem }) {
 
       toast.success("Status updated", { id: toastId });
       router.refresh();
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong", { id: toastId });
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleFoundStatus = async (status: FoundItemStatus) => {
+    const toastId = toast.loading("Updating status...");
+    setIsLoading(true);
+
+    try {
+      const res = await updateFoundItemStatus(item.id, status);
+
+      if (res.error) {
+        toast.error(res.error.message, { id: toastId });
+        return;
+      }
+
+      toast.success("Status updated", { id: toastId });
+      router.refresh();
+    } catch {
+      toast.error("Something went wrong", { id: toastId });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Derive display values — ISO date string from backend
+  const dateLabel = lost ? "Date Lost" : "Date Found";
+  const dateValue = lost ? item.dateLost : item.dateFound;
+  const locationLabel = lost ? "Location Lost" : "Location Found";
+  const locationValue = lost
+    ? item.locationLost
+    : item.locationFound;
+
+  // Primary image(s)
+  const primaryImage = lost
+    ? item.imageURL
+    : item.images?.[0];
+  const extraImages = !lost && item.images?.length > 1
+    ? item.images.slice(1)
+    : [];
+
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
-      {/* Image */}
-      {item.image && (
+      {/* Primary image */}
+      {primaryImage && (
         <div className="w-full h-64 rounded-lg border overflow-hidden bg-muted">
           <img
-            src={item.image}
+            src={primaryImage}
             alt={item.title}
             className="w-full h-full object-cover"
           />
         </div>
       )}
 
-      {/* Main detail card */}
+      {/* Extra images for found items */}
+      {extraImages.length > 0 && (
+        <div className="flex gap-3 overflow-x-auto">
+          {extraImages.map((src, i) => (
+            <div
+              key={i}
+              className="w-32 h-32 shrink-0 rounded-md border overflow-hidden bg-muted"
+            >
+              <img
+                src={src}
+                alt={`${item.title} ${i + 2}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Detail card */}
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
@@ -99,9 +154,12 @@ export function ItemDetail({ item }: { item: IItem }) {
               <CardTitle className="text-xl">{item.title}</CardTitle>
               <CardDescription>{item.description}</CardDescription>
             </div>
-            <Badge variant={statusVariant[item.status]} className="shrink-0">
-              {item.status}
-            </Badge>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              <Badge variant={lost ? "destructive" : "default"}>
+                {lost ? "LOST" : "FOUND"}
+              </Badge>
+              <Badge variant="outline">{item.status}</Badge>
+            </div>
           </div>
         </CardHeader>
 
@@ -109,52 +167,87 @@ export function ItemDetail({ item }: { item: IItem }) {
           <Separator />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <TagIcon className="size-4 shrink-0" />
-              <span>
-                Category:{" "}
-                <span className="text-foreground font-medium">
-                  {item.category.charAt(0) +
-                    item.category.slice(1).toLowerCase()}
-                </span>
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <MapPinIcon className="size-4 shrink-0" />
-              <span>
-                Location:{" "}
-                <span className="text-foreground font-medium">
-                  {item.location}
-                </span>
-              </span>
-            </div>
-
+            {/* Date — ISO string formatted for display */}
             <div className="flex items-center gap-2 text-muted-foreground">
               <CalendarIcon className="size-4 shrink-0" />
               <span>
-                Date:{" "}
+                {dateLabel}:{" "}
                 <span className="text-foreground font-medium">
-                  {formatDateTime(item.date)}
+                  {dateValue ? formatDateTime(dateValue) : "—"}
                 </span>
               </span>
             </div>
 
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <UserIcon className="size-4 shrink-0" />
-              <span>
-                Reported by:{" "}
-                <span className="text-foreground font-medium">
-                  {item.reporterName ?? "Unknown"}
+            {/* Location */}
+            {locationValue && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <MapPinIcon className="size-4 shrink-0" />
+                <span>
+                  {locationLabel}:{" "}
+                  <span className="text-foreground font-medium">
+                    {locationValue}
+                  </span>
                 </span>
-              </span>
-            </div>
+              </div>
+            )}
+
+            {/* Brand */}
+            {item.brand && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <TagIcon className="size-4 shrink-0" />
+                <span>
+                  Brand:{" "}
+                  <span className="text-foreground font-medium">
+                    {item.brand}
+                  </span>
+                </span>
+              </div>
+            )}
+
+            {/* Color */}
+            {item.color && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <TagIcon className="size-4 shrink-0" />
+                <span>
+                  Color:{" "}
+                  <span className="text-foreground font-medium">
+                    {item.color}
+                  </span>
+                </span>
+              </div>
+            )}
+
+            {/* Found-only: custody type */}
+            {!lost && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <TagIcon className="size-4 shrink-0" />
+                <span>
+                  Custody:{" "}
+                  <span className="text-foreground font-medium">
+                    {item.custodyType}
+                  </span>
+                </span>
+              </div>
+            )}
+
+            {/* Found-only: identifying details */}
+            {!lost && item.identifyingDetails && (
+              <div className="col-span-full flex items-start gap-2 text-muted-foreground">
+                <TagIcon className="size-4 shrink-0 mt-0.5" />
+                <span>
+                  Identifying details:{" "}
+                  <span className="text-foreground font-medium">
+                    {item.identifyingDetails}
+                  </span>
+                </span>
+              </div>
+            )}
           </div>
 
           <Separator />
 
           <p className="text-xs text-muted-foreground">
-            Submitted {formatDateTime(item.createdAt)}
+            Submitted {item.createdAt ? formatDateTime(item.createdAt) : "—"}
           </p>
         </CardContent>
       </Card>
@@ -169,22 +262,57 @@ export function ItemDetail({ item }: { item: IItem }) {
           Back to Items
         </Button>
 
-        {item.status === "LOST" && (
+        {/* Lost item status transitions */}
+        {lost && item.status === LostItemStatus.OPEN && (
           <Button
-            onClick={() => handleStatusChange("FOUND")}
+            onClick={() => handleLostStatus(LostItemStatus.CLAIM_REQUESTED)}
             disabled={isLoading}
           >
-            Mark as Found
+            Request Claim
+          </Button>
+        )}
+        {lost && item.status === LostItemStatus.CLAIM_REQUESTED && (
+          <>
+            <Button
+              onClick={() => handleLostStatus(LostItemStatus.CLAIM_APPROVED)}
+              disabled={isLoading}
+            >
+              Approve Claim
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => handleLostStatus(LostItemStatus.CLAIM_REJECTED)}
+              disabled={isLoading}
+            >
+              Reject Claim
+            </Button>
+          </>
+        )}
+        {lost && item.status !== LostItemStatus.CLOSED && (
+          <Button
+            variant="secondary"
+            onClick={() => handleLostStatus(LostItemStatus.CLOSED)}
+            disabled={isLoading}
+          >
+            Close
           </Button>
         )}
 
-        {item.status !== "CLAIMED" && (
+        {/* Found item status transitions */}
+        {!lost && item.status === FoundItemStatus.REPORTED && (
           <Button
-            variant="secondary"
-            onClick={() => handleStatusChange("CLAIMED")}
+            onClick={() => handleFoundStatus(FoundItemStatus.IN_CUSTODY)}
             disabled={isLoading}
           >
-            Mark as Claimed
+            Mark In Custody
+          </Button>
+        )}
+        {!lost && item.status === FoundItemStatus.IN_CUSTODY && (
+          <Button
+            onClick={() => handleFoundStatus(FoundItemStatus.RETURNED)}
+            disabled={isLoading}
+          >
+            Mark Returned
           </Button>
         )}
 
