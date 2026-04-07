@@ -1,20 +1,15 @@
-import { Navbar } from "@/components/layout/Navbar";
-import { userService } from "@/services/user.service";
+import type { ReactNode } from 'react';
+import Navbar from '@/components/layout/Navbar';
 
-export const dynamic = "force-dynamic";
-
-export default async function CommonLayout({
+export default function CommonLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
-  const { data } = await userService.getSession();
-  const isLoggedIn = !!data?.user;
-
   return (
-    <div>
-      <Navbar isLoggedIn={isLoggedIn} />
-      {children}
+    <div className="min-h-screen bg-background text-foreground">
+      <Navbar />
+      <main>{children}</main>
     </div>
   );
 }
