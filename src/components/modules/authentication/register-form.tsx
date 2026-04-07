@@ -26,12 +26,12 @@ const formSchema = z.object({
   firstName: z.string().min(1, "This field is required"),
   lastName: z.string().min(1, "This field is required"),
   email: z.email(),
+  // always a string (defaultValue ""); validated only when non-empty
   phone: z
     .string()
     .refine((val) => !val || /^\+[1-9]\d{6,14}$/.test(val), {
       message: "Use international format, e.g. +61412345678",
-    })
-    .optional(),
+    }),
   password: z.string().min(8, "Minimum length is 8"),
   confirmPassword: z.string().min(8, "Minimum length is 8"),
 });
@@ -252,7 +252,11 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
                       onChange={(e) => field.handleChange(e.target.value)}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FieldError
+                        errors={field.state.meta.errors.map((e) =>
+                          typeof e === "string" ? { message: e } : e
+                        )}
+                      />
                     )}
                   </Field>
                 );

@@ -11,22 +11,13 @@ export default async function ItemViewPage({
   const { id } = await params;
 
   // Try lost-items first, then found-items
-  const { data: item, error } = await itemService.getItemById(id);
+  const result = await itemService.getItemById(id);
 
-  if (!item || error?.message === "Item not found.") {
+  if (!result.data) {
     notFound();
   }
 
-  if (error) {
-    return (
-      <div className="flex flex-col gap-6">
-        <Breadcrumb title="Error" />
-        <div className="border rounded-md p-8 text-center text-muted-foreground">
-          {error.message}
-        </div>
-      </div>
-    );
-  }
+  const item = result.data;
 
   return (
     <div className="flex flex-col gap-6">
