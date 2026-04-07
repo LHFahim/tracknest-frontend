@@ -10,10 +10,13 @@ import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardLayout({}: {}) {
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { data } = await userService.getSession();
   const userInfo = data?.user;
-  const role = userInfo?.role;
 
   if (!userInfo) {
     redirect("/login");
@@ -31,7 +34,7 @@ export default async function DashboardLayout({}: {}) {
           />
         </header>
 
-        <div className="flex flex-1 flex-col gap-4 p-4"></div>
+        <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

@@ -12,8 +12,13 @@ export const adminRoutes: IRoute[] = [
         title: "Analytics",
         url: "/admin-dashboard/analytics",
       },
-
       { title: "Users", url: "/admin-dashboard/users" },
+    ],
+  },
+  {
+    title: "Lost & Found",
+    items: [
+      { title: "All Items", url: "/items" },
     ],
   },
 ];

@@ -16,51 +16,74 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { authClient } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import * as z from "zod";
 
 const formSchema = z.object({
-  name: z.string().min(1, "This field is required"),
-  password: z.string().min(8, "Minimum length is 8"),
+  firstName: z.string().min(1, "This field is required"),
+  lastName: z.string().min(1, "This field is required"),
   email: z.email(),
-  role: z.enum(["STUDENT"]),
+  phone: z
+    .string()
+    .refine((val) => !val || /^\+[1-9]\d{6,14}$/.test(val), {
+      message: "Use international format, e.g. +61412345678",
+    })
+    .optional(),
+  password: z.string().min(8, "Minimum length is 8"),
+  confirmPassword: z.string().min(8, "Minimum length is 8"),
 });
 
 export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
-  const handleGoogleLogin = async () => {
-    const data = authClient.signIn.social({
-      provider: "google",
-      callbackURL: "http://localhost:3000",
-    });
-  };
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
+      phone: "",
       password: "",
-      role: "",
+      confirmPassword: "",
     },
     validators: {
+      onChange: formSchema,
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      const toastId = toast.loading("Creating user");
+      if (value.password !== value.confirmPassword) {
+        toast.error("Passwords do not match.");
+        return;
+      }
+
+      const toastId = toast.loading("Creating account...");
 
       try {
-        // NOTE: registration call here
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            firstName: value.firstName,
+            lastName: value.lastName,
+            email: value.email,
+            phone: value.phone || undefined,
+            password: value.password,
+          }),
+        });
 
-        toast.success("User Created Successfully", { id: toastId });
-      } catch (err) {
+        const data = await res.json();
+
+        if (!res.ok) {
+          toast.error(data.message ?? "Registration failed.", { id: toastId });
+          return;
+        }
+
+        toast.success("Account created successfully", { id: toastId });
+        router.push("/");
+        router.refresh();
+      } catch {
         toast.error("Something went wrong, please try again.", { id: toastId });
       }
     },
@@ -76,7 +99,7 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
       </CardHeader>
       <CardContent>
         <form
-          id="login-form"
+          id="register-form"
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
@@ -84,13 +107,35 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
         >
           <FieldGroup>
             <form.Field
-              name="name"
+              name="firstName"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>First Name</FieldLabel>
+                    <Input
+                      type="text"
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
+            <form.Field
+              name="lastName"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Last Name</FieldLabel>
                     <Input
                       type="text"
                       id={field.name}
@@ -111,7 +156,7 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <Field>
+                  <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                     <Input
                       type="email"
@@ -128,12 +173,40 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
               }}
             />
             <form.Field
+              name="phone"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      Phone{" "}
+                      <span className="text-muted-foreground font-normal">
+                        (optional)
+                      </span>
+                    </FieldLabel>
+                    <Input
+                      type="tel"
+                      id={field.name}
+                      name={field.name}
+                      placeholder="+61412345678"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
+            <form.Field
               name="password"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <Field>
+                  <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Password</FieldLabel>
                     <Input
                       type="password"
@@ -149,38 +222,38 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
                 );
               }}
             />
-
-            {/* role selection here */}
             <form.Field
-              name="role"
+              name="confirmPassword"
+              validators={{
+                onChangeListenTo: ["password"],
+                onChange: ({ value, fieldApi }) => {
+                  if (
+                    value &&
+                    value !== fieldApi.form.getFieldValue("password")
+                  ) {
+                    return "Passwords do not match";
+                  }
+                  return undefined;
+                },
+              }}
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <Field orientation="responsive" data-invalid={isInvalid}>
-                    <FieldLabel htmlFor="form-tanstack-select-language">
-                      I am a
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      Confirm Password
                     </FieldLabel>
+                    <Input
+                      type="password"
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
                     )}
-
-                    <Select
-                      name={field.name}
-                      value={field.state.value}
-                      onValueChange={field.handleChange}
-                    >
-                      <SelectTrigger
-                        id="form-tanstack-select-language"
-                        aria-invalid={isInvalid}
-                        className="min-w-[120px]"
-                      >
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent position="item-aligned">
-                        <SelectItem value="STUDENT">Student</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </Field>
                 );
               }}
@@ -188,18 +261,19 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
           </FieldGroup>
         </form>
       </CardContent>
-      <CardFooter className="flex flex-col gap-5 justify-end">
-        <Button form="login-form" type="submit" className="w-full">
+      <CardFooter className="flex flex-col gap-4">
+        <Button form="register-form" type="submit" className="w-full">
           Register
         </Button>
-        {/* <Button
-          onClick={() => handleGoogleLogin()}
-          variant="outline"
-          type="button"
-          className="w-full"
-        >
-          Continue with Google
-        </Button> */}
+        <p className="text-sm text-muted-foreground text-center">
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="text-foreground underline underline-offset-4 hover:text-primary"
+          >
+            Log in
+          </Link>
+        </p>
       </CardFooter>
     </Card>
   );

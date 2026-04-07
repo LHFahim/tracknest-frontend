@@ -1,14 +1,19 @@
 import { Navbar } from "@/components/layout/Navbar";
+import { userService } from "@/services/user.service";
 
-export default function CommonLayout({
+export const dynamic = "force-dynamic";
+
+export default async function CommonLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { data } = await userService.getSession();
+  const isLoggedIn = !!data?.user;
+
   return (
     <div>
-      {" "}
-      <Navbar />
+      <Navbar isLoggedIn={isLoggedIn} />
       {children}
     </div>
   );
