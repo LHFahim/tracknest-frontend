@@ -1,12 +1,11 @@
 import { IRoute } from "@/types";
 
-/** Sidebar routes for SuperAdmin (panelType: "ADMIN") */
-export const adminRoutes: IRoute[] = [
+/** Sidebar routes for Staff (panelType: "STAFF") */
+export const staffRoutes: IRoute[] = [
   {
     title: "Overview",
     items: [
       { title: "Dashboard", url: "/dashboard" },
-      { title: "Analytics", url: "/dashboard/analytics" },
     ],
   },
   {
@@ -14,13 +13,13 @@ export const adminRoutes: IRoute[] = [
     items: [
       { title: "Users", url: "/dashboard/users" },
       { title: "Categories", url: "/dashboard/categories" },
+      { title: "All Items", url: "/items" },
     ],
   },
   {
-    title: "Lost & Found",
+    title: "Reports",
     items: [
-      { title: "All Items", url: "/items" },
-      { title: "Reports", url: "/dashboard/reports" },
+      { title: "View Reports", url: "/dashboard/reports" },
     ],
   },
 ];
