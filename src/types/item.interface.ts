@@ -37,6 +37,7 @@ export interface ILostItem {
 export enum FoundItemStatus {
   REPORTED = "REPORTED",
   IN_CUSTODY = "IN_CUSTODY",
+  READY_FOR_HANDOVER = "READY_FOR_HANDOVER",
   RETURNED = "RETURNED",
   UNCLAIMED = "UNCLAIMED",
   DISPOSED = "DISPOSED",

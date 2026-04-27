@@ -22,10 +22,21 @@ export async function POST(req: NextRequest) {
 
     const response = NextResponse.json({ user: data.user }, { status: 200 });
 
+    const maxAge = 7 * 24 * 60 * 60; // 7 days
+
     response.cookies.set("access_token", data.access_token, {
       httpOnly: true,
       path: "/",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+      maxAge,
+      sameSite: "lax",
+    });
+
+    // Store panelType so userService.getSession() can read the role.
+    // /profile/me only returns firstName/lastName/email/phone (ProfileDto omits panelType).
+    response.cookies.set("panel_type", data.user?.panelType ?? "", {
+      httpOnly: true,
+      path: "/",
+      maxAge,
       sameSite: "lax",
     });
 

@@ -30,8 +30,12 @@ export const userService = {
 
       const user = await res.json();
 
-      // Backend returns `panelType`; map it to `role` for frontend consumption
-      return { data: { user: { ...user, role: user.panelType } }, error: null };
+      // /profile/me (ProfileDto) omits panelType — read it from the panel_type
+      // cookie that was stored during login/register from the full AuthResponseDto.
+      const cookieStore = await cookies();
+      const panelType = cookieStore.get("panel_type")?.value ?? user.panelType ?? "";
+
+      return { data: { user: { ...user, panelType, role: panelType } }, error: null };
     } catch {
       return { data: null, error: { message: "Failed to fetch session" } };
     }

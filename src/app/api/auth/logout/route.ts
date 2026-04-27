@@ -10,5 +10,12 @@ export async function POST() {
     sameSite: "lax",
   });
 
+  response.cookies.set("panel_type", "", {
+    httpOnly: true,
+    path: "/",
+    maxAge: 0,
+    sameSite: "lax",
+  });
+
   return response;
 }

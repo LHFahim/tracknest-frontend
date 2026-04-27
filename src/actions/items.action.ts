@@ -1,7 +1,7 @@
 "use server";
 
 import { itemService } from "@/services/item.service";
-import { FoundItemStatus, LostItemStatus } from "@/types/item.interface";
+import { CustodyType, FoundItemStatus, LostItemStatus } from "@/types/item.interface";
 import { revalidateTag } from "next/cache";
 
 export const deleteLostItem = async (id: string) => {
@@ -25,5 +25,37 @@ export const updateLostItemStatus = async (id: string, status: LostItemStatus) =
 export const updateFoundItemStatus = async (id: string, status: FoundItemStatus) => {
   const res = await itemService.updateFoundItemStatus(id, status);
   revalidateTag("items", {});
+  return res;
+};
+
+export const createLostItem = async (payload: {
+  title: string;
+  description: string;
+  category: string;
+  dateLost: string;
+  locationLost?: string;
+  brand?: string;
+  color?: string;
+  imageURL?: string;
+}) => {
+  const res = await itemService.createLostItem(payload);
+  if (res.data) revalidateTag("items", {});
+  return res;
+};
+
+export const createFoundItem = async (payload: {
+  title: string;
+  description: string;
+  category: string;
+  dateFound: string;
+  custodyType: CustodyType;
+  locationFound?: string;
+  brand?: string;
+  color?: string;
+  identifyingDetails?: string;
+  images?: string[];
+}) => {
+  const res = await itemService.createFoundItem(payload);
+  if (res.data) revalidateTag("items", {});
   return res;
 };
