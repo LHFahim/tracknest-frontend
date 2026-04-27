@@ -25,7 +25,7 @@ export const itemService = {
     try {
       const token = await getBearerToken();
 
-      const res = await fetch(`${API_URL}/lost-items`, {
+      const res = await fetch(`${API_URL}/lost-items?sortBy=createdAt&sort=desc`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
         next: { tags: ["items"] },
@@ -121,7 +121,7 @@ export const itemService = {
     try {
       const token = await getBearerToken();
 
-      const res = await fetch(`${API_URL}/found-items`, {
+      const res = await fetch(`${API_URL}/found-items?sortBy=createdAt&sort=desc`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
         next: { tags: ["items"] },
@@ -232,7 +232,12 @@ export const itemService = {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        // Backend service unconditionally reads gpsLocation.latitude —
+        // send zero coords as fallback when user doesn't provide GPS.
+        body: JSON.stringify({
+          ...payload,
+          gpsLocation: { latitude: 0, longitude: 0 },
+        }),
       });
 
       const data = await res.json();

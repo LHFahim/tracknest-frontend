@@ -20,7 +20,7 @@ export const categoryService = {
     try {
       const token = await getBearerToken();
 
-      const res = await fetch(`${API_URL}/categories?pageSize=100`, {
+      const res = await fetch(`${API_URL}/categories?pageSize=100&sortBy=createdAt&sort=desc`, {
         headers: { Authorization: `Bearer ${token}` },
         next: { tags: ["categories"] },
       });
