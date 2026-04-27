@@ -1,5 +1,6 @@
 import { ItemDetail } from "@/components/modules/items/ItemDetail";
 import { itemService } from "@/services/item.service";
+import { userService } from "@/services/user.service";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -10,19 +11,22 @@ export default async function ItemViewPage({
 }) {
   const { id } = await params;
 
-  // Try lost-items first, then found-items
-  const result = await itemService.getItemById(id);
+  const [result, sessionResult] = await Promise.all([
+    itemService.getItemById(id),
+    userService.getSession(),
+  ]);
 
   if (!result.data) {
     notFound();
   }
 
   const item = result.data;
+  const role = sessionResult.data?.user?.role as string | undefined;
 
   return (
     <div className="flex flex-col gap-6">
       <Breadcrumb title={item.title} />
-      <ItemDetail item={item} />
+      <ItemDetail item={item} role={role} />
     </div>
   );
 }

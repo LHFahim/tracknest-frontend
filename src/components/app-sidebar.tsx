@@ -43,7 +43,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       routes = staffRoutes;
       roleLabel = "Staff";
       break;
-    case RolesEnum.USER:
+    case RolesEnum.NORMAL_USER:
     default:
       routes = userRoutes;
       roleLabel = "User";

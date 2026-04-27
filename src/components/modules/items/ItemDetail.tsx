@@ -6,6 +6,7 @@ import {
   updateFoundItemStatus,
   updateLostItemStatus,
 } from "@/actions/items.action";
+import { ClaimButton } from "@/components/modules/claims/ClaimButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +30,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export function ItemDetail({ item }: { item: ILostItem | IFoundItem }) {
+export function ItemDetail({
+  item,
+  role,
+}: {
+  item: ILostItem | IFoundItem;
+  role?: string;
+}) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const lost = isLostItem(item);
@@ -298,8 +305,13 @@ export function ItemDetail({ item }: { item: ILostItem | IFoundItem }) {
           </Button>
         )}
 
-        {/* Found item status transitions */}
-        {!lost && item.status === FoundItemStatus.REPORTED && (
+        {/* Found item — claim button for regular users */}
+        {!lost && role === "NORMAL_USER" && item.status === FoundItemStatus.REPORTED && (
+          <ClaimButton foundItemId={item.id} itemTitle={item.title} />
+        )}
+
+        {/* Found item status transitions for admin/staff */}
+        {!lost && role !== "NORMAL_USER" && item.status === FoundItemStatus.REPORTED && (
           <Button
             onClick={() => handleFoundStatus(FoundItemStatus.IN_CUSTODY)}
             disabled={isLoading}
@@ -307,7 +319,15 @@ export function ItemDetail({ item }: { item: ILostItem | IFoundItem }) {
             Mark In Custody
           </Button>
         )}
-        {!lost && item.status === FoundItemStatus.IN_CUSTODY && (
+        {!lost && role !== "NORMAL_USER" && item.status === FoundItemStatus.IN_CUSTODY && (
+          <Button
+            onClick={() => handleFoundStatus(FoundItemStatus.READY_FOR_HANDOVER)}
+            disabled={isLoading}
+          >
+            Ready for Handover
+          </Button>
+        )}
+        {!lost && role !== "NORMAL_USER" && item.status === FoundItemStatus.READY_FOR_HANDOVER && (
           <Button
             onClick={() => handleFoundStatus(FoundItemStatus.RETURNED)}
             disabled={isLoading}
@@ -316,14 +336,16 @@ export function ItemDetail({ item }: { item: ILostItem | IFoundItem }) {
           </Button>
         )}
 
-        <Button
-          variant="destructive"
-          onClick={handleDelete}
-          disabled={isLoading}
-          className="ml-auto"
-        >
-          Delete Item
-        </Button>
+        {role !== "NORMAL_USER" && (
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={isLoading}
+            className="ml-auto"
+          >
+            Delete Item
+          </Button>
+        )}
       </div>
     </div>
   );

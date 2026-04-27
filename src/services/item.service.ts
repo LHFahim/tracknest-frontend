@@ -2,6 +2,7 @@ import "server-only";
 
 import { env } from "@/env";
 import {
+  CustodyType,
   IFoundItem,
   ILostItem,
   IPaginatedResponse,
@@ -207,6 +208,84 @@ export const itemService = {
       return { data, error: null };
     } catch {
       return { data: null, error: { message: "Something Went Wrong" } };
+    }
+  },
+
+  // ─── Create items ────────────────────────────────────────────────────────────
+
+  createLostItem: async (payload: {
+    title: string;
+    description: string;
+    category: string;
+    dateLost: string;
+    locationLost?: string;
+    brand?: string;
+    color?: string;
+    imageURL?: string;
+  }): Promise<{ data: ILostItem | null; error: { message: string } | null }> => {
+    try {
+      const token = await getBearerToken();
+
+      const res = await fetch(`${API_URL}/lost-items`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        return {
+          data: null,
+          error: { message: data?.message ?? "Could not create lost item." },
+        };
+      }
+
+      return { data: data as ILostItem, error: null };
+    } catch {
+      return { data: null, error: { message: "Something went wrong." } };
+    }
+  },
+
+  createFoundItem: async (payload: {
+    title: string;
+    description: string;
+    category: string;
+    dateFound: string;
+    custodyType: CustodyType;
+    locationFound?: string;
+    brand?: string;
+    color?: string;
+    identifyingDetails?: string;
+    images?: string[];
+  }): Promise<{ data: IFoundItem | null; error: { message: string } | null }> => {
+    try {
+      const token = await getBearerToken();
+
+      const res = await fetch(`${API_URL}/found-items`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        return {
+          data: null,
+          error: { message: data?.message ?? "Could not create found item." },
+        };
+      }
+
+      return { data: data as IFoundItem, error: null };
+    } catch {
+      return { data: null, error: { message: "Something went wrong." } };
     }
   },
 
