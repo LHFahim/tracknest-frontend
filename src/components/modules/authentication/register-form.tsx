@@ -70,6 +70,7 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
             email: value.email,
             phone: value.phone || undefined,
             password: value.password,
+            panelType: "NORMAL_USER",
           }),
         });
 
