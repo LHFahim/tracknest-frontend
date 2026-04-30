@@ -45,12 +45,15 @@ export const userService = {
     try {
       const token = await getBearerToken();
 
-      const res = await fetch(`${API_URL}/users`, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-        next: { tags: ["users"] },
-      });
+      const res = await fetch(
+        `${API_URL}/users?sortBy=createdAt&sort=desc&pageSize=100`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
+          next: { tags: ["users"] },
+        }
+      );
 
       const data = await res.json();
 
@@ -68,13 +71,9 @@ export const userService = {
     try {
       const token = await getBearerToken();
 
-      const res = await fetch(`${API_URL}/users/${userId}/status`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: "BANNED" }),
+      const res = await fetch(`${API_URL}/users/${userId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await res.json();

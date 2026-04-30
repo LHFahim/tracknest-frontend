@@ -1,14 +1,24 @@
 export interface IUser {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  emailVerified: boolean;
-  image?: string | null;
+  phone?: string;
+  avatarURL?: string;
+  panelType: string;
+  isActive: boolean;
+  isDeleted: boolean;
+  isEmailVerified?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
-  role: any;
-  status: any;
-  phone?: string | null;
-
-  createdAt: Date;
-  updatedAt: Date;
+export interface IUserPaginated {
+  items: IUser[];
+  pagination: {
+    total: number;
+    current: number;
+    next: number;
+    previous: number;
+  };
 }

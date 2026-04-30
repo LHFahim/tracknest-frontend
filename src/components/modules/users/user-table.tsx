@@ -1,13 +1,7 @@
 "use client";
 
-import { deleteUser } from "@/actions/users.action";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DeleteUserButton } from "@/components/modules/users/DeleteUserButton";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -17,33 +11,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IUser } from "@/types/user.interface";
-import { MoreHorizontalIcon } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
+
+const panelTypeLabel: Record<string, string> = {
+  ADMIN: "Super Admin",
+  STAFF: "Staff",
+  NORMAL_USER: "User",
+};
+
+const panelTypeVariant: Record<string, "default" | "secondary" | "outline"> = {
+  ADMIN: "default",
+  STAFF: "outline",
+  NORMAL_USER: "secondary",
+};
 
 export function UserTable({ users }: { users: IUser[] }) {
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);
-
-  const handleDelete = async (userId: string) => {
-    const toastId = toast.loading("Updating user status...");
-    setIsDeleting(userId);
-
-    try {
-      const res = await deleteUser(userId);
-
-      if (res.error) {
-        toast.error(res.error.message, { id: toastId });
-        return;
-      }
-
-      toast.success("User status updated successfully", { id: toastId });
-    } catch (err) {
-      toast.error("Something went wrong", { id: toastId });
-    } finally {
-      setIsDeleting(null);
-    }
-  };
-
   return (
     <div className="border rounded-md p-5">
       <Table>
@@ -54,8 +35,7 @@ export function UserTable({ users }: { users: IUser[] }) {
             <TableHead>Role</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Phone</TableHead>
-            <TableHead>User since</TableHead>
-
+            <TableHead>Joined</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -70,46 +50,40 @@ export function UserTable({ users }: { users: IUser[] }) {
               </TableCell>
             </TableRow>
           ) : (
-            users.map((user) => {
-              return (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>{user.status}</TableCell>
-                  <TableCell>
-                    {user.phone === null ? "N/A" : user.phone}
-                  </TableCell>
-                  <TableCell>
-                    {user.createdAt.toString().split("T")[0]}
-                  </TableCell>
-
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-8">
-                          <MoreHorizontalIcon />
-                          <span className="sr-only">Open menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          variant={
-                            user.status === "ACTIVE" ? "destructive" : "default"
-                          }
-                          onClick={() => handleDelete(user.id)}
-                          disabled={isDeleting === user.id}
-                        >
-                          {user.status === "ACTIVE"
-                            ? "BAN USER"
-                            : "ACTIVATE USER"}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              );
-            })
+            users.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell className="font-medium">
+                  {user.firstName} {user.lastName}
+                </TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>
+                  <Badge variant={panelTypeVariant[user.panelType] ?? "secondary"}>
+                    {panelTypeLabel[user.panelType] ?? user.panelType}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={user.isActive ? "outline" : "destructive"}>
+                    {user.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                </TableCell>
+                <TableCell>{user.phone ?? "N/A"}</TableCell>
+                <TableCell>
+                  {user.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString("en-AU", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })
+                    : "—"}
+                </TableCell>
+                <TableCell className="text-right">
+                  <DeleteUserButton
+                    userId={user.id}
+                    userName={`${user.firstName} ${user.lastName}`}
+                  />
+                </TableCell>
+              </TableRow>
+            ))
           )}
         </TableBody>
       </Table>
