@@ -12,9 +12,10 @@ export const deleteUser = async (userId: string) => {
 };
 
 export const updateMyProfile = async (payload: {
-  name?: string;
-  image?: string | null;
-  phone?: string | null;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  avatarURL?: string;
 }) => {
   const res = await userService.updateMyProfile(payload);
 

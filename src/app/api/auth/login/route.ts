@@ -40,6 +40,15 @@ export async function POST(req: NextRequest) {
       sameSite: "lax",
     });
 
+    // Store user_id so we can call PATCH /users/:id for profile updates.
+    // /profile/me (ProfileDto) omits the id field.
+    response.cookies.set("user_id", data.user?.id ?? "", {
+      httpOnly: true,
+      path: "/",
+      maxAge,
+      sameSite: "lax",
+    });
+
     return response;
   } catch {
     return NextResponse.json(

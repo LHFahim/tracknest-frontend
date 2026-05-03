@@ -22,6 +22,13 @@ export const userRoutes: IRoute[] = [
     items: [
       { title: "My Lost Reports", url: "/dashboard/my-lost-items" },
       { title: "My Found Reports", url: "/dashboard/my-found-items" },
+      { title: "My Handovers", url: "/dashboard/my-handovers" },
+    ],
+  },
+  {
+    title: "Account",
+    items: [
+      { title: "Edit Profile", url: "/dashboard/profile" },
     ],
   },
 ];

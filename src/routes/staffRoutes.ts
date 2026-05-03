@@ -23,4 +23,10 @@ export const staffRoutes: IRoute[] = [
       { title: "Handovers", url: "/dashboard/handovers" },
     ],
   },
+  {
+    title: "Account",
+    items: [
+      { title: "Edit Profile", url: "/dashboard/profile" },
+    ],
+  },
 ];

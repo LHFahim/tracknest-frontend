@@ -16,37 +16,35 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export function EditProfileForm({
-  initialName,
+  initialFirstName,
+  initialLastName,
   initialPhone,
-  initialImage,
+  initialAvatarURL,
 }: {
-  initialName?: string | null;
-  initialPhone?: string | null;
-  initialImage?: string | null;
+  initialFirstName?: string;
+  initialLastName?: string;
+  initialPhone?: string;
+  initialAvatarURL?: string;
 }) {
-  const [name, setName] = useState(initialName ?? "");
+  const [firstName, setFirstName] = useState(initialFirstName ?? "");
+  const [lastName, setLastName] = useState(initialLastName ?? "");
   const [phone, setPhone] = useState(initialPhone ?? "");
-  const [image, setImage] = useState(initialImage ?? "");
+  const [avatarURL, setAvatarURL] = useState(initialAvatarURL ?? "");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const payload: {
-      name?: string;
-      phone?: string | null;
-      image?: string | null;
-    } = {};
-
-    if (name.trim()) payload.name = name.trim();
-    payload.phone = phone.trim() === "" ? null : phone.trim();
-    payload.image = image.trim() === "" ? null : image.trim();
-
     const toastId = toast.loading("Updating profile...");
     setIsSubmitting(true);
 
     try {
-      const res = await updateMyProfile(payload);
+      const res = await updateMyProfile({
+        firstName: firstName.trim() || undefined,
+        lastName: lastName.trim() || undefined,
+        phone: phone.trim() || undefined,
+        avatarURL: avatarURL.trim() || undefined,
+      });
 
       if (res.error) {
         toast.error(res.error.message, { id: toastId });
@@ -54,7 +52,7 @@ export function EditProfileForm({
       }
 
       toast.success("Profile updated successfully", { id: toastId });
-    } catch (err) {
+    } catch {
       toast.error("Something Went Wrong", { id: toastId });
     } finally {
       setIsSubmitting(false);
@@ -69,30 +67,41 @@ export function EditProfileForm({
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Your name"
-            />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="firstName">First Name</Label>
+              <Input
+                id="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="First name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Last name"
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="phone">Phone</Label>
             <Input
               id="phone"
               value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-              placeholder="Phone number"
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+61412345678"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="image">Profile Image URL</Label>
+            <Label htmlFor="avatarURL">Profile Image URL</Label>
             <Input
-              id="image"
-              value={image}
-              onChange={(event) => setImage(event.target.value)}
+              id="avatarURL"
+              value={avatarURL}
+              onChange={(e) => setAvatarURL(e.target.value)}
               placeholder="https://..."
             />
           </div>
