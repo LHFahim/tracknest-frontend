@@ -34,8 +34,9 @@ export const userService = {
       // cookie that was stored during login/register from the full AuthResponseDto.
       const cookieStore = await cookies();
       const panelType = cookieStore.get("panel_type")?.value ?? user.panelType ?? "";
+      const userId = cookieStore.get("user_id")?.value ?? "";
 
-      return { data: { user: { ...user, panelType, role: panelType } }, error: null };
+      return { data: { user: { ...user, id: userId, panelType, role: panelType } }, error: null };
     } catch {
       return { data: null, error: { message: "Failed to fetch session" } };
     }
@@ -89,14 +90,21 @@ export const userService = {
   },
 
   updateMyProfile: async (payload: {
-    name?: string;
-    image?: string | null;
-    phone?: string | null;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    avatarURL?: string;
   }) => {
     try {
       const token = await getBearerToken();
+      const cookieStore = await cookies();
+      const userId = cookieStore.get("user_id")?.value;
 
-      const res = await fetch(`${API_URL}/profile/me`, {
+      if (!userId) {
+        return { data: null, error: { message: "Could not identify user." } };
+      }
+
+      const res = await fetch(`${API_URL}/users/${userId}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -108,7 +116,7 @@ export const userService = {
       const data = await res.json();
 
       if (!res.ok) {
-        return { data: null, error: { message: "Error: Could not update profile." } };
+        return { data: null, error: { message: data?.message ?? "Error: Could not update profile." } };
       }
 
       return { data, error: null };

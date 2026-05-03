@@ -17,5 +17,12 @@ export async function POST() {
     sameSite: "lax",
   });
 
+  response.cookies.set("user_id", "", {
+    httpOnly: true,
+    path: "/",
+    maxAge: 0,
+    sameSite: "lax",
+  });
+
   return response;
 }
