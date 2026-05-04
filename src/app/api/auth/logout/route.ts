@@ -24,5 +24,12 @@ export async function POST() {
     sameSite: "lax",
   });
 
+  response.cookies.set("refresh_token", "", {
+    httpOnly: true,
+    path: "/",
+    maxAge: 0,
+    sameSite: "lax",
+  });
+
   return response;
 }
