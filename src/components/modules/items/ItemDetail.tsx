@@ -25,7 +25,8 @@ import {
   LostItemStatus,
   isLostItem,
 } from "@/types/item.interface";
-import { CalendarIcon, MapPinIcon, TagIcon } from "lucide-react";
+import { CalendarIcon, MapPinIcon, PencilIcon, TagIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -33,13 +34,22 @@ import { toast } from "sonner";
 export function ItemDetail({
   item,
   role,
+  userId,
 }: {
   item: ILostItem | IFoundItem;
   role?: string;
+  userId?: string;
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const lost = isLostItem(item);
+
+  // Check if current user owns this item
+  const ownerId = lost ? item.createdBy : item.foundBy;
+  const isOwner = !!userId && userId === ownerId;
+  const editHref = lost
+    ? `/dashboard/my-lost-items/${item.id}/edit`
+    : `/dashboard/my-found-items/${item.id}/edit`;
 
   const handleDelete = async () => {
     const toastId = toast.loading("Deleting item...");
@@ -268,6 +278,16 @@ export function ItemDetail({
         >
           Back to Items
         </Button>
+
+        {/* Edit button — shown to owner */}
+        {isOwner && (
+          <Button asChild variant="outline" disabled={isLoading}>
+            <Link href={editHref}>
+              <PencilIcon className="h-4 w-4 mr-1.5" />
+              Edit
+            </Link>
+          </Button>
+        )}
 
         {/* Lost item status transitions */}
         {lost && item.status === LostItemStatus.OPEN && (
