@@ -70,16 +70,23 @@ export default async function MyClaimsPage() {
                     )}
                   </div>
 
-                  <p className="mt-3 text-sm text-foreground">{claim.message}</p>
+                  <p className="mt-3 text-sm text-foreground line-clamp-2">{claim.message}</p>
 
                   {claim.reviewComment && (
                     <div className="mt-3 rounded-xl bg-muted/50 px-4 py-3">
                       <p className="text-xs font-medium text-muted-foreground mb-1">
                         Staff response
                       </p>
-                      <p className="text-sm text-foreground">{claim.reviewComment}</p>
+                      <p className="text-sm text-foreground line-clamp-2">{claim.reviewComment}</p>
                     </div>
                   )}
+
+                  <Link
+                    href={`/dashboard/my-claims/${claim.id}`}
+                    className="mt-3 inline-block text-xs text-primary hover:underline"
+                  >
+                    View details →
+                  </Link>
                 </div>
 
                 {(claim.status === ClaimStatus.PENDING ||
