@@ -100,6 +100,24 @@ export const claimService = {
     }
   },
 
+  getMyClaimById: async (
+    claimId: string
+  ): Promise<{ data: IClaim | null; error: { message: string } | null }> => {
+    try {
+      const token = await getBearerToken();
+      const res = await fetch(`${API_URL}/claims/my/${claimId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      });
+      if (res.status === 404) return { data: null, error: { message: "Claim not found." } };
+      const data = await res.json();
+      if (!res.ok) return { data: null, error: { message: "Could not fetch claim." } };
+      return { data: data as IClaim, error: null };
+    } catch {
+      return { data: null, error: { message: "Something went wrong." } };
+    }
+  },
+
   // ─── Admin ────────────────────────────────────────────────────────────────
 
   adminGetAllClaims: async (): Promise<{

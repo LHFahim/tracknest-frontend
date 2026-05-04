@@ -1,4 +1,5 @@
 import { handoverService } from "@/services/handover.service";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -72,10 +73,17 @@ export default async function MyHandoversPage() {
                       <span className="text-muted-foreground w-24 shrink-0">
                         Note
                       </span>
-                      <span className="text-foreground">{handover.note}</span>
+                      <span className="text-foreground line-clamp-1">{handover.note}</span>
                     </div>
                   )}
                 </div>
+
+                <Link
+                  href={`/dashboard/my-handovers/${handover.id}`}
+                  className="mt-3 inline-block text-xs text-primary hover:underline"
+                >
+                  View details →
+                </Link>
               </div>
             </div>
           ))}

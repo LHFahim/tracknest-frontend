@@ -41,6 +41,24 @@ export const handoverService = {
     }
   },
 
+  getHandoverById: async (
+    handoverId: string
+  ): Promise<{ data: IHandover | null; error: { message: string } | null }> => {
+    try {
+      const token = await getBearerToken();
+      const res = await fetch(`${API_URL}/handovers/${handoverId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      });
+      if (res.status === 404) return { data: null, error: { message: "Handover not found." } };
+      const data = await res.json();
+      if (!res.ok) return { data: null, error: { message: "Could not fetch handover." } };
+      return { data: data as IHandover, error: null };
+    } catch {
+      return { data: null, error: { message: "Something went wrong." } };
+    }
+  },
+
   // ─── Admin ────────────────────────────────────────────────────────────────
 
   adminGetAllHandovers: async (): Promise<{
