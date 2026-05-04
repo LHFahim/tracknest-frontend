@@ -115,6 +115,40 @@ export const itemService = {
     }
   },
 
+  updateLostItem: async (
+    id: string,
+    payload: {
+      title?: string;
+      description?: string;
+      category?: string;
+      dateLost?: string;
+      locationLost?: string;
+      brand?: string;
+      color?: string;
+      imageURL?: string;
+    }
+  ): Promise<{ data: ILostItem | null; error: { message: string } | null }> => {
+    try {
+      const token = await getBearerToken();
+
+      const res = await fetch(`${API_URL}/lost-items/${id}`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        return { data: null, error: { message: data?.message ?? "Could not update lost item." } };
+      }
+
+      return { data: data as ILostItem, error: null };
+    } catch {
+      return { data: null, error: { message: "Something Went Wrong" } };
+    }
+  },
+
   // ─── Found Items ─────────────────────────────────────────────────────────────
 
   getAllFoundItems: async () => {
@@ -206,6 +240,42 @@ export const itemService = {
       }
 
       return { data, error: null };
+    } catch {
+      return { data: null, error: { message: "Something Went Wrong" } };
+    }
+  },
+
+  updateFoundItem: async (
+    id: string,
+    payload: {
+      title?: string;
+      description?: string;
+      category?: string;
+      dateFound?: string;
+      locationFound?: string;
+      custodyType?: string;
+      brand?: string;
+      color?: string;
+      identifyingDetails?: string;
+      images?: string[];
+    }
+  ): Promise<{ data: IFoundItem | null; error: { message: string } | null }> => {
+    try {
+      const token = await getBearerToken();
+
+      const res = await fetch(`${API_URL}/found-items/${id}`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        return { data: null, error: { message: data?.message ?? "Could not update found item." } };
+      }
+
+      return { data: data as IFoundItem, error: null };
     } catch {
       return { data: null, error: { message: "Something Went Wrong" } };
     }

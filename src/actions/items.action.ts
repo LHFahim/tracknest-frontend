@@ -28,6 +28,44 @@ export const updateFoundItemStatus = async (id: string, status: FoundItemStatus)
   return res;
 };
 
+export const updateLostItem = async (
+  id: string,
+  payload: {
+    title?: string;
+    description?: string;
+    category?: string;
+    dateLost?: string;
+    locationLost?: string;
+    brand?: string;
+    color?: string;
+    imageURL?: string;
+  }
+) => {
+  const res = await itemService.updateLostItem(id, payload);
+  if (!res.error) revalidateTag("items", {});
+  return res;
+};
+
+export const updateFoundItem = async (
+  id: string,
+  payload: {
+    title?: string;
+    description?: string;
+    category?: string;
+    dateFound?: string;
+    locationFound?: string;
+    custodyType?: string;
+    brand?: string;
+    color?: string;
+    identifyingDetails?: string;
+    images?: string[];
+  }
+) => {
+  const res = await itemService.updateFoundItem(id, payload);
+  if (!res.error) revalidateTag("items", {});
+  return res;
+};
+
 export const createLostItem = async (payload: {
   title: string;
   description: string;

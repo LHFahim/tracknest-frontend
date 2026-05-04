@@ -22,11 +22,12 @@ export default async function ItemViewPage({
 
   const item = result.data;
   const role = sessionResult.data?.user?.role as string | undefined;
+  const userId = sessionResult.data?.user?.id as string | undefined;
 
   return (
     <div className="flex flex-col gap-6">
       <Breadcrumb title={item.title} />
-      <ItemDetail item={item} role={role} />
+      <ItemDetail item={item} role={role} userId={userId} />
     </div>
   );
 }
