@@ -21,11 +21,14 @@ async function getBearerToken(): Promise<string | null> {
 export const itemService = {
   // ─── Lost Items ─────────────────────────────────────────────────────────────
 
-  getAllLostItems: async () => {
+  getAllLostItems: async (params?: { search?: string; page?: number; pageSize?: number }) => {
     try {
       const token = await getBearerToken();
+      const qs = new URLSearchParams({ sortBy: "createdAt", sort: "desc", pageSize: String(params?.pageSize ?? 20) });
+      if (params?.search) qs.set("search", params.search);
+      if (params?.page) qs.set("page", String(params.page));
 
-      const res = await fetch(`${API_URL}/lost-items?sortBy=createdAt&sort=desc`, {
+      const res = await fetch(`${API_URL}/lost-items?${qs}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
         next: { tags: ["items"] },
@@ -117,11 +120,14 @@ export const itemService = {
 
   // ─── Found Items ─────────────────────────────────────────────────────────────
 
-  getAllFoundItems: async () => {
+  getAllFoundItems: async (params?: { search?: string; page?: number; pageSize?: number }) => {
     try {
       const token = await getBearerToken();
+      const qs = new URLSearchParams({ sortBy: "createdAt", sort: "desc", pageSize: String(params?.pageSize ?? 20) });
+      if (params?.search) qs.set("search", params.search);
+      if (params?.page) qs.set("page", String(params.page));
 
-      const res = await fetch(`${API_URL}/found-items?sortBy=createdAt&sort=desc`, {
+      const res = await fetch(`${API_URL}/found-items?${qs}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
         next: { tags: ["items"] },
