@@ -49,6 +49,14 @@ export async function POST(req: NextRequest) {
       sameSite: "lax",
     });
 
+    // Store refresh_token for silent token renewal.
+    response.cookies.set("refresh_token", data.refresh_token ?? "", {
+      httpOnly: true,
+      path: "/",
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      sameSite: "lax",
+    });
+
     return response;
   } catch {
     return NextResponse.json(
