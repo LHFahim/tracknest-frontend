@@ -20,7 +20,7 @@ export function WithdrawClaimButton({ claimId }: { claimId: string }) {
         toast.error(res.error.message, { id: toastId });
       } else {
         toast.success("Claim withdrawn.", { id: toastId });
-        router.refresh();
+        router.push("/dashboard/my-claims");
       }
     } catch {
       toast.error("Something went wrong.", { id: toastId });

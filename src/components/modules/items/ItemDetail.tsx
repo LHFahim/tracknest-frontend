@@ -326,7 +326,7 @@ export function ItemDetail({
         )}
 
         {/* Found item — claim button for regular users */}
-        {!lost && role === "NORMAL_USER" && item.status === FoundItemStatus.REPORTED && (
+        {!lost && role === "NORMAL_USER" && !isOwner && item.status === FoundItemStatus.REPORTED && (
           <ClaimButton foundItemId={item.id} itemTitle={item.title} />
         )}
 
