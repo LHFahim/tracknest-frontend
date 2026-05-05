@@ -35,10 +35,10 @@ export const claimService = {
       const data = await res.json();
 
       if (!res.ok) {
-        return {
-          data: null,
-          error: { message: data?.message ?? "Could not submit claim." },
-        };
+        const msg = Array.isArray(data?.message)
+          ? data.message.join(", ")
+          : (data?.message ?? "Could not submit claim.");
+        return { data: null, error: { message: msg } };
       }
 
       return { data: data as IClaim, error: null };
