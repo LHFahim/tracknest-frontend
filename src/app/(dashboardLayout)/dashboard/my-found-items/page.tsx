@@ -57,7 +57,6 @@ export default async function MyFoundItemsPage() {
               <Link
                 href={`/dashboard/my-found-items/${item.id}/edit`}
                 className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-lg border border-border bg-background px-2 py-1 text-xs text-muted-foreground hover:text-foreground hover:border-primary/50 transition"
-                onClick={(e) => e.stopPropagation()}
               >
                 <PencilIcon className="h-3 w-3" />
                 Edit
