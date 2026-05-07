@@ -39,25 +39,25 @@ npm install
 
 ## Configure Environment Variables
 
-Create a .env file and add:
+Create a .env file and add:<br>
 
-BACKEND_API=http://localhost:5000
-FRONTEND_API=http://localhost:3000
-API_URL=http://localhost:5000
-AUTH_URL=http://localhost:3000
-Run Frontend
-npm run dev
+BACKEND_API=http://localhost:5000<br>
+FRONTEND_API=http://localhost:3000<br>
+API_URL=http://localhost:5000<br>
+AUTH_URL=http://localhost:3000<br>
+Run Frontend<br>
+npm run dev<br>
 
 ## Frontend runs on:
 
-http://localhost:3000
-Run Backend
-npm run start
+http://localhost:3000<br>
+Run Backend<br>
+npm run start<br>
 
 ## Backend runs on:
 
-http://localhost:5000
-Run MongoDB
+http://localhost:5000<br>
+Run MongoDB<br>
 
 Ensure MongoDB service is running locally before starting the backend server.
 
