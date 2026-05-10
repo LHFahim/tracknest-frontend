@@ -1,149 +1,21 @@
 # Frontend Test Cases – Lost & Found System
 
-## Test Case 1: Login Page UI Load
 
-| Field | Details |
-|------|--------|
-Test Case ID | FTC001
-Feature | Login Page
-Description | Verify login page loads correctly
-Precondition | User opens application URL
-Test Steps | 1. Open application<br>2. Navigate to login page
-Expected Result | Login page loads with all UI elements visible
-Actual Result | 
-Status | 
-
----
-
-## Test Case 2: Login Form Input Validation
-
-| Field | Details |
-|------|--------|
-Test Case ID | FTC002
-Feature | Login Form
-Description | Verify required fields validation
-Precondition | Login page loaded
-Test Steps | 1. Leave fields empty<br>2. Click login
-Expected Result | Validation message displayed
-Actual Result | 
-Status | 
-
----
-
-## Test Case 3: Login Button Functionality
-
-| Field | Details |
-|------|--------|
-Test Case ID | FTC003
-Feature | Login Button
-Description | Verify login button triggers action
-Precondition | User enters valid data
-Test Steps | 1. Enter credentials<br>2. Click login
-Expected Result | User redirected to dashboard
-Actual Result | 
-Status |  
-
----
-
-## Test Case 4: Navigation Menu
-
-| Field | Details |
-|------|--------|
-Test Case ID | FTC004
-Feature | Navigation
-Description | Verify navigation links work correctly
-Precondition | User logged in
-Test Steps | 1. Click menu links
-Expected Result | Correct page is opened
-Actual Result |
-Status | 
-
----
-
-## Test Case 5: Report Lost Item Form UI
-
-| Field | Details |
-|------|--------|
-Test Case ID | FTC005
-Feature | Report Lost Item
-Description | Verify form UI elements are displayed
-Precondition | User logged in
-Test Steps | 1. Navigate to report page
-Expected Result | All input fields and buttons visible
-Actual Result | 
-Status |  
-
----
-
-## Test Case 6: Form Submission (Frontend)
-
-| Field | Details |
-|------|--------|
-Test Case ID | FTC006
-Feature | Form Submission
-Description | Verify form submits correctly from UI
-Precondition | Form filled
-Test Steps | 1. Enter data<br>2. Click submit
-Expected Result | Success message displayed
-Actual Result | 
-Status | 
-
----
-
-## Test Case 7: Error Message Display
-
-| Field | Details |
-|------|--------|
-Test Case ID | FTC007
-Feature | Error Handling
-Description | Verify error messages are shown
-Precondition | Invalid input entered
-Test Steps | 1. Submit invalid data
-Expected Result | Error message displayed clearly
-Actual Result | 
-Status | 
-
----
-
-## Test Case 8: Matching Results Display
-
-| Field | Details |
-|------|--------|
-Test Case ID | FTC008
-Feature | Matching Results UI
-Description | Verify matching results are displayed correctly
-Precondition | Matching data exists
-Test Steps | 1. Submit item<br>2. View results
-Expected Result | Matching items displayed properly
-Actual Result | 
-Status | 
-
----
-
-## Test Case 9: Responsive Design
-
-| Field | Details |
-|------|--------|
-Test Case ID | FTC009
-Feature | UI Responsiveness
-Description | Verify UI works on different screen sizes
-Precondition | Application running
-Test Steps | 1. Resize browser
-Expected Result | UI adjusts properly
-Actual Result | 
-Status | 
-
----
-
-## Test Case 10: Logout Functionality
-
-| Field | Details |
-|------|--------|
-Test Case ID | FTC010
-Feature | Logout
-Description | Verify logout works correctly
-Precondition | User logged in
-Test Steps | 1. Click logout
-Expected Result | User redirected to login page
-Actual Result | 
-Status | 
+| **Test Case ID** | **Feature**                 | **Page**      | **Scenario Type** | **Description**                   | **Steps**                               | **Expected Result**                 |
+| ---------------- | --------------------------- | ------------- | ----------------- | --------------------------------- | --------------------------------------- | ----------------------------------- |
+| FTC001           | Login UI                    | Login Page    | Positive          | Verify login page loads correctly | Open application URL                    | Login page displays all UI elements |
+| FTC002           | Login Form                  | Login Page    | Negative          | Empty input validation            | Click login without entering data       | Validation error messages displayed |
+| FTC003           | Login Button                | Login Page    | Positive          | Valid login submission            | Enter valid credentials and click login | User redirected to dashboard        |
+| FTC004           | Login Error                 | Login Page    | Negative          | Invalid login credentials         | Enter wrong password and submit         | Error message displayed             |
+| FTC005           | Registration Form           | Register Page | Positive          | Valid user registration           | Fill form and submit                    | Registration successful             |
+| FTC006           | Registration Validation     | Register Page | Negative          | Missing required fields           | Submit incomplete form                  | Validation errors shown             |
+| FTC007           | Navigation Menu             | Dashboard     | Positive          | Navigation between pages          | Click menu links                        | Correct page loads                  |
+| FTC008           | Navigation Error            | Dashboard     | Negative          | Invalid navigation attempt        | Click broken/invalid link               | Error handled or page not found     |
+| FTC009           | Report Lost Item UI         | Report Page   | Positive          | Form UI display                   | Open report page                        | All fields and buttons visible      |
+| FTC010           | Report Lost Item Submission | Report Page   | Positive          | Submit valid form                 | Enter details and submit                | Success message shown               |
+| FTC011           | Report Form Validation      | Report Page   | Negative          | Empty/invalid input               | Submit incomplete form                  | Validation errors displayed         |
+| FTC012           | Matching Results UI         | Results Page  | Positive          | Display matching results          | Submit item and view results            | Matching items displayed clearly    |
+| FTC013           | Matching Error              | Results Page  | Negative          | No results available              | Submit item with no match               | “No results found” message          |
+| FTC014           | Responsive Design           | All Pages     | Positive          | UI responsiveness                 | Resize browser window                   | Layout adjusts properly             |
+| FTC015           | Button Click Actions        | All Pages     | Positive          | Button functionality              | Click buttons                           | Correct actions triggered           |
+| FTC016           | Logout                      | Dashboard     | Positive          | Logout functionality              | Click logout button                     | User redirected to login page       |
