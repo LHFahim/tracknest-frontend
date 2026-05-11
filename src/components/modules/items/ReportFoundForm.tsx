@@ -28,7 +28,7 @@ const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   category: z.string().min(1, "Category is required"),
-  dateFound: z.string().min(1, "Date is required"),
+  dateFound: z.string().min(1, "Date found is required"),
   custodyType: z.enum(["USER", "OFFICE"]),
   locationFound: z.string(),
   brand: z.string(),
@@ -57,7 +57,8 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
     },
     validators: { onChange: formSchema, onSubmit: formSchema },
     onSubmit: async ({ value }) => {
-      const toastId = toast.loading("Submitting report…");
+      const toastId = toast.loading("Submitting found item report...");
+
       try {
         const res = await createFoundItem({
           title: value.title,
@@ -77,21 +78,31 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
           return;
         }
 
-        toast.success("Found item reported successfully", { id: toastId });
+        toast.success("Found item report submitted successfully", {
+          id: toastId,
+        });
+
         router.push("/dashboard/my-found-items");
         router.refresh();
       } catch {
-        toast.error("Something went wrong, please try again.", { id: toastId });
+        toast.error("Something went wrong. Please try again.", {
+          id: toastId,
+        });
       }
     },
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Report a Found Item</CardTitle>
+    <Card className="rounded-2xl border-border shadow-sm">
+      <CardHeader className="border-b pb-4">
+        <CardTitle className="text-xl">Found Item Details</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Fill in the details as clearly as possible. Required fields are marked
+          with an asterisk.
+        </p>
       </CardHeader>
-      <CardContent>
+
+      <CardContent className="pt-6">
         <form
           id="report-found-form"
           onSubmit={(e) => {
@@ -99,21 +110,26 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
             form.handleSubmit();
           }}
         >
-          <FieldGroup>
+          <FieldGroup className="gap-5">
             {/* Title */}
             <form.Field name="title">
               {(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Title *</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>Item Title *</FieldLabel>
                     <Input
                       id={field.name}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
-                      placeholder="e.g. Blue backpack found near canteen"
+                      placeholder="e.g. Blue backpack found near the cafeteria"
+                      className="h-11 rounded-xl"
                     />
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
                   </Field>
                 );
               }}
@@ -122,19 +138,29 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
             {/* Description */}
             <form.Field name="description">
               {(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Description *</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>
+                      Item Description *
+                    </FieldLabel>
                     <textarea
                       id={field.name}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
-                      rows={3}
-                      placeholder="Describe the item in detail to help the owner identify it…"
-                      className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                      rows={4}
+                      placeholder="Describe the item, where it was found, and any visible features."
+                      className="w-full resize-none rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    <p className="text-xs text-muted-foreground">
+                      Avoid sharing private details that should only be used for
+                      ownership verification.
+                    </p>
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
                   </Field>
                 );
               }}
@@ -143,7 +169,9 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
             {/* Category */}
             <form.Field name="category">
               {(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel>Category *</FieldLabel>
@@ -151,8 +179,8 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
                       value={field.state.value}
                       onValueChange={(v) => field.handleChange(v)}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                      <SelectTrigger className="h-11 rounded-xl">
+                        <SelectValue placeholder="Select the item category" />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((cat) => (
@@ -162,7 +190,9 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
                         ))}
                       </SelectContent>
                     </Select>
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
                   </Field>
                 );
               }}
@@ -171,7 +201,9 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
             {/* Date Found */}
             <form.Field name="dateFound">
               {(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Date Found *</FieldLabel>
@@ -181,8 +213,11 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       max={new Date().toISOString().split("T")[0]}
+                      className="h-11 rounded-xl"
                     />
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
                   </Field>
                 );
               }}
@@ -192,19 +227,28 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
             <form.Field name="custodyType">
               {(field) => (
                 <Field>
-                  <FieldLabel>Currently with *</FieldLabel>
+                  <FieldLabel>Currently With *</FieldLabel>
                   <Select
                     value={field.state.value}
-                    onValueChange={(v) => field.handleChange(v as "USER" | "OFFICE")}
+                    onValueChange={(v) =>
+                      field.handleChange(v as "USER" | "OFFICE")
+                    }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-11 rounded-xl">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="OFFICE">Office / Lost & Found desk</SelectItem>
-                      <SelectItem value="USER">With me (I'll hand it over)</SelectItem>
+                      <SelectItem value="OFFICE">
+                        Office / Lost &amp; Found desk
+                      </SelectItem>
+                      <SelectItem value="USER">
+                        With me — I will hand it over
+                      </SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Select where the item is currently being kept.
+                  </p>
                 </Field>
               )}
             </form.Field>
@@ -215,32 +259,41 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
                 <Field>
                   <FieldLabel htmlFor={field.name}>
                     Location Found{" "}
-                    <span className="text-muted-foreground font-normal">(optional)</span>
+                    <span className="font-normal text-muted-foreground">
+                      (optional)
+                    </span>
                   </FieldLabel>
                   <Input
                     id={field.name}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="e.g. Cafeteria, Car Park A"
+                    className="h-11 rounded-xl"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Add the place where you found the item if you remember it.
+                  </p>
                 </Field>
               )}
             </form.Field>
 
-            {/* Brand & Color */}
+            {/* Brand and Colour */}
             <div className="grid gap-4 sm:grid-cols-2">
               <form.Field name="brand">
                 {(field) => (
                   <Field>
                     <FieldLabel htmlFor={field.name}>
                       Brand{" "}
-                      <span className="text-muted-foreground font-normal">(optional)</span>
+                      <span className="font-normal text-muted-foreground">
+                        (optional)
+                      </span>
                     </FieldLabel>
                     <Input
                       id={field.name}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="e.g. Apple, Adidas"
+                      className="h-11 rounded-xl"
                     />
                   </Field>
                 )}
@@ -250,14 +303,17 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
                 {(field) => (
                   <Field>
                     <FieldLabel htmlFor={field.name}>
-                      Color{" "}
-                      <span className="text-muted-foreground font-normal">(optional)</span>
+                      Colour{" "}
+                      <span className="font-normal text-muted-foreground">
+                        (optional)
+                      </span>
                     </FieldLabel>
                     <Input
                       id={field.name}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="e.g. Red, Navy blue"
+                      className="h-11 rounded-xl"
                     />
                   </Field>
                 )}
@@ -270,26 +326,33 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
                 <Field>
                   <FieldLabel htmlFor={field.name}>
                     Identifying Details{" "}
-                    <span className="text-muted-foreground font-normal">(optional)</span>
+                    <span className="font-normal text-muted-foreground">
+                      (optional)
+                    </span>
                   </FieldLabel>
                   <textarea
                     id={field.name}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    rows={2}
-                    placeholder="Any details only the true owner would know…"
-                    className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                    rows={3}
+                    placeholder="Add details that only the real owner is likely to know."
+                    className="w-full resize-none rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    These details can help staff verify ownership before the item
+                    is returned.
+                  </p>
                 </Field>
               )}
             </form.Field>
           </FieldGroup>
         </form>
 
-        <div className="mt-6 flex gap-3">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Button form="report-found-form" type="submit" className="flex-1">
-            Submit Report
+            Submit Found Item Report
           </Button>
+
           <Button type="button" variant="outline" onClick={() => router.back()}>
             Cancel
           </Button>
