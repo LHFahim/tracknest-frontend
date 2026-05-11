@@ -27,7 +27,7 @@ const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   category: z.string().min(1, "Category is required"),
-  dateLost: z.string().min(1, "Date is required"),
+  dateLost: z.string().min(1, "Date lost is required"),
   locationLost: z.string(),
   brand: z.string(),
   color: z.string(),
@@ -54,7 +54,8 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
     },
     validators: { onChange: formSchema, onSubmit: formSchema },
     onSubmit: async ({ value }) => {
-      const toastId = toast.loading("Submitting report…");
+      const toastId = toast.loading("Submitting lost item report...");
+
       try {
         const res = await createLostItem({
           title: value.title,
@@ -72,21 +73,31 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
           return;
         }
 
-        toast.success("Lost item reported successfully", { id: toastId });
+        toast.success("Lost item report submitted successfully", {
+          id: toastId,
+        });
+
         router.push("/dashboard/my-lost-items");
         router.refresh();
       } catch {
-        toast.error("Something went wrong, please try again.", { id: toastId });
+        toast.error("Something went wrong. Please try again.", {
+          id: toastId,
+        });
       }
     },
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Report a Lost Item</CardTitle>
+    <Card className="rounded-2xl border-border shadow-sm">
+      <CardHeader className="border-b pb-4">
+        <CardTitle className="text-xl">Lost Item Details</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Fill in the details as accurately as possible. Required fields are
+          marked with an asterisk.
+        </p>
       </CardHeader>
-      <CardContent>
+
+      <CardContent className="pt-6">
         <form
           id="report-lost-form"
           onSubmit={(e) => {
@@ -94,21 +105,26 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
             form.handleSubmit();
           }}
         >
-          <FieldGroup>
+          <FieldGroup className="gap-5">
             {/* Title */}
             <form.Field name="title">
               {(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Title *</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>Item Title *</FieldLabel>
                     <Input
                       id={field.name}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="e.g. Black leather wallet"
+                      className="h-11 rounded-xl"
                     />
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
                   </Field>
                 );
               }}
@@ -117,19 +133,28 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
             {/* Description */}
             <form.Field name="description">
               {(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Description *</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>
+                      Item Description *
+                    </FieldLabel>
                     <textarea
                       id={field.name}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
-                      rows={3}
-                      placeholder="Describe the item — markings, contents, distinguishing features…"
-                      className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                      rows={4}
+                      placeholder="Describe the item, markings, contents, or any features that can help identify it."
+                      className="w-full resize-none rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    <p className="text-xs text-muted-foreground">
+                      Add details that would make the item easier to recognise.
+                    </p>
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
                   </Field>
                 );
               }}
@@ -138,7 +163,9 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
             {/* Category */}
             <form.Field name="category">
               {(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel>Category *</FieldLabel>
@@ -146,8 +173,8 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
                       value={field.state.value}
                       onValueChange={(v) => field.handleChange(v)}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                      <SelectTrigger className="h-11 rounded-xl">
+                        <SelectValue placeholder="Select the item category" />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((cat) => (
@@ -157,7 +184,9 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
                         ))}
                       </SelectContent>
                     </Select>
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
                   </Field>
                 );
               }}
@@ -166,7 +195,9 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
             {/* Date Lost */}
             <form.Field name="dateLost">
               {(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Date Lost *</FieldLabel>
@@ -176,8 +207,11 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       max={new Date().toISOString().split("T")[0]}
+                      className="h-11 rounded-xl"
                     />
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
                   </Field>
                 );
               }}
@@ -189,32 +223,42 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
                 <Field>
                   <FieldLabel htmlFor={field.name}>
                     Location Lost{" "}
-                    <span className="text-muted-foreground font-normal">(optional)</span>
+                    <span className="font-normal text-muted-foreground">
+                      (optional)
+                    </span>
                   </FieldLabel>
                   <Input
                     id={field.name}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="e.g. Main Library, Building B"
+                    className="h-11 rounded-xl"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    If you remember the place, add it to help narrow down the
+                    search.
+                  </p>
                 </Field>
               )}
             </form.Field>
 
-            {/* Brand & Color side-by-side */}
+            {/* Brand and Color */}
             <div className="grid gap-4 sm:grid-cols-2">
               <form.Field name="brand">
                 {(field) => (
                   <Field>
                     <FieldLabel htmlFor={field.name}>
                       Brand{" "}
-                      <span className="text-muted-foreground font-normal">(optional)</span>
+                      <span className="font-normal text-muted-foreground">
+                        (optional)
+                      </span>
                     </FieldLabel>
                     <Input
                       id={field.name}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="e.g. Samsung, Nike"
+                      className="h-11 rounded-xl"
                     />
                   </Field>
                 )}
@@ -224,14 +268,17 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
                 {(field) => (
                   <Field>
                     <FieldLabel htmlFor={field.name}>
-                      Color{" "}
-                      <span className="text-muted-foreground font-normal">(optional)</span>
+                      Colour{" "}
+                      <span className="font-normal text-muted-foreground">
+                        (optional)
+                      </span>
                     </FieldLabel>
                     <Input
                       id={field.name}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="e.g. Black, Silver"
+                      className="h-11 rounded-xl"
                     />
                   </Field>
                 )}
@@ -244,34 +291,33 @@ export function ReportLostForm({ categories }: ReportLostFormProps) {
                 <Field>
                   <FieldLabel htmlFor={field.name}>
                     Image URL{" "}
-                    <span className="text-muted-foreground font-normal">(optional)</span>
+                    <span className="font-normal text-muted-foreground">
+                      (optional)
+                    </span>
                   </FieldLabel>
                   <Input
                     id={field.name}
                     type="url"
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder="https://…"
+                    placeholder="https://example.com/item-photo.jpg"
+                    className="h-11 rounded-xl"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Add an image link if you have one.
+                  </p>
                 </Field>
               )}
             </form.Field>
           </FieldGroup>
         </form>
 
-        <div className="mt-6 flex gap-3">
-          <Button
-            form="report-lost-form"
-            type="submit"
-            className="flex-1"
-          >
-            Submit Report
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <Button form="report-lost-form" type="submit" className="flex-1">
+            Submit Lost Item Report
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-          >
+
+          <Button type="button" variant="outline" onClick={() => router.back()}>
             Cancel
           </Button>
         </div>
