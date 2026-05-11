@@ -65,14 +65,19 @@ function ActionCard({
   return (
     <Link
       href={href}
-      className="group flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:border-primary/50 hover:shadow-md"
+      className="group flex min-h-[120px] flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
     >
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 transition group-hover:bg-primary/20">
-        <Icon className="h-5 w-5 text-primary" />
-      </div>
-      <div>
-        <p className="text-sm font-semibold text-foreground">{title}</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+      <div className="flex items-start gap-4">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 transition group-hover:bg-primary/15">
+          <Icon className="h-5 w-5 text-primary" />
+        </div>
+
+        <div>
+          <p className="text-sm font-semibold text-foreground">{title}</p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            {description}
+          </p>
+        </div>
       </div>
     </Link>
   );
@@ -80,11 +85,7 @@ function ActionCard({
 
 // ─── Role dashboards ──────────────────────────────────────────────────────────
 
-async function AdminDashboard({
-  name,
-}: {
-  name: string;
-}) {
+async function AdminDashboard({ name }: { name: string }) {
   const [lostRes, foundRes] = await Promise.all([
     itemService.getAllLostItems(),
     itemService.getAllFoundItems(),
@@ -93,9 +94,8 @@ async function AdminDashboard({
   const totalLost = lostRes.data?.pagination?.total ?? 0;
   const totalFound = foundRes.data?.pagination?.total ?? 0;
   const openClaims =
-    lostRes.data?.items?.filter(
-      (i) => i.status === "CLAIM_REQUESTED"
-    ).length ?? 0;
+    lostRes.data?.items?.filter((i) => i.status === "CLAIM_REQUESTED").length ??
+    0;
 
   return (
     <div className="space-y-8">
@@ -104,7 +104,8 @@ async function AdminDashboard({
           Welcome back, {name}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Super Admin — full system overview
+          Super Admin dashboard for reviewing system activity and managing key
+          platform areas.
         </p>
       </div>
 
@@ -132,49 +133,55 @@ async function AdminDashboard({
           label="Active Items"
           value={totalLost + totalFound}
           icon={FolderOpen}
-          sub="Combined"
+          sub="Lost and found combined"
         />
       </div>
 
       {/* Quick actions */}
       <div>
-        <h2 className="mb-4 text-base font-semibold text-foreground">
-          Quick Actions
-        </h2>
+        <div className="mb-4">
+          <h2 className="text-base font-semibold text-foreground">
+            Quick Actions
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage users, categories, reports, analytics, and system controls.
+          </p>
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <ActionCard
             title="Manage Users"
-            description="View, ban, or update user accounts"
+            description="View, ban, or update user accounts."
             href="/dashboard/users"
             icon={Users}
           />
           <ActionCard
             title="Manage Categories"
-            description="Add, edit, or remove item categories"
+            description="Add, edit, or remove item categories."
             href="/dashboard/categories"
             icon={Tag}
           />
           <ActionCard
             title="All Items"
-            description="Browse all lost & found reports"
+            description="Browse all reported lost and found items."
             href="/items"
             icon={PackageSearch}
           />
           <ActionCard
             title="Reports"
-            description="View and toggle item report visibility"
+            description="Review item reports and manage visibility."
             href="/dashboard/reports"
             icon={FileText}
           />
           <ActionCard
             title="Analytics"
-            description="Platform stats and recovery metrics"
+            description="View platform statistics and recovery insights."
             href="/dashboard/analytics"
             icon={BarChart3}
           />
           <ActionCard
             title="Security"
-            description="Audit logs and access controls"
+            description="Review audit logs and access control areas."
             href="/dashboard/security"
             icon={ShieldAlert}
           />
@@ -193,9 +200,8 @@ async function StaffDashboard({ name }: { name: string }) {
   const totalLost = lostRes.data?.pagination?.total ?? 0;
   const totalFound = foundRes.data?.pagination?.total ?? 0;
   const openClaims =
-    lostRes.data?.items?.filter(
-      (i) => i.status === "CLAIM_REQUESTED"
-    ).length ?? 0;
+    lostRes.data?.items?.filter((i) => i.status === "CLAIM_REQUESTED").length ??
+    0;
 
   return (
     <div className="space-y-8">
@@ -204,7 +210,8 @@ async function StaffDashboard({ name }: { name: string }) {
           Welcome back, {name}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Staff — manage items, users and categories
+          Staff dashboard for reviewing item reports, claims, users, and
+          categories.
         </p>
       </div>
 
@@ -213,46 +220,54 @@ async function StaffDashboard({ name }: { name: string }) {
           label="Lost Reports"
           value={totalLost}
           icon={PackageSearch}
+          sub="Currently recorded"
         />
         <StatCard
           label="Found Reports"
           value={totalFound}
           icon={PackageCheck}
+          sub="Currently recorded"
         />
         <StatCard
           label="Pending Claims"
           value={openClaims}
           icon={ClipboardList}
-          sub="Needs action"
+          sub="Needs review"
         />
       </div>
 
       <div>
-        <h2 className="mb-4 text-base font-semibold text-foreground">
-          Quick Actions
-        </h2>
+        <div className="mb-4">
+          <h2 className="text-base font-semibold text-foreground">
+            Quick Actions
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Review user accounts, reports, categories, and item records.
+          </p>
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <ActionCard
             title="Manage Users"
-            description="View and manage user accounts"
+            description="View and manage registered user accounts."
             href="/dashboard/users"
             icon={Users}
           />
           <ActionCard
             title="Manage Categories"
-            description="Create and edit item categories"
+            description="Create and update item categories."
             href="/dashboard/categories"
             icon={Tag}
           />
           <ActionCard
             title="All Items"
-            description="Review all lost & found reports"
+            description="Review all lost and found item records."
             href="/items"
             icon={PackageSearch}
           />
           <ActionCard
             title="Reports"
-            description="Toggle visibility of item reports"
+            description="Check item reports and update visibility."
             href="/dashboard/reports"
             icon={Eye}
           />
@@ -270,48 +285,55 @@ function UserDashboard({ name }: { name: string }) {
           Welcome back, {name}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Browse items, report losses, and manage your claims
+          Report lost or found items, browse listings, and keep track of your
+          activity in one place.
         </p>
       </div>
 
       <div>
-        <h2 className="mb-4 text-base font-semibold text-foreground">
-          What would you like to do?
-        </h2>
+        <div className="mb-4">
+          <h2 className="text-base font-semibold text-foreground">
+            Quick Actions
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Choose an option below to continue with your lost and found task.
+          </p>
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <ActionCard
             title="Report a Lost Item"
-            description="Submit a report for something you've lost"
+            description="Create a report with item details, date, and location."
             href="/dashboard/report-lost"
             icon={PlusCircle}
           />
           <ActionCard
             title="Report a Found Item"
-            description="Let others know you've found something"
+            description="Record a found item so the owner can identify it."
             href="/dashboard/report-found"
             icon={PackageCheck}
           />
           <ActionCard
             title="Browse Items"
-            description="Search all lost & found listings"
+            description="Search all reported lost and found item listings."
             href="/items"
             icon={SearchCheck}
           />
           <ActionCard
             title="My Lost Reports"
-            description="Track items you've reported missing"
+            description="View and update the items you reported as lost."
             href="/dashboard/my-lost-items"
             icon={PackageSearch}
           />
           <ActionCard
             title="My Found Reports"
-            description="Items you've reported finding"
+            description="View and update the items you reported as found."
             href="/dashboard/my-found-items"
             icon={FolderOpen}
           />
           <ActionCard
             title="My Claims"
-            description="Check the status of your claims"
+            description="Track your submitted claims and their current status."
             href="/dashboard/my-claims"
             icon={ClipboardList}
           />
@@ -330,7 +352,7 @@ export default async function DashboardPage() {
   const user = data.user;
   const name = user.firstName
     ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`
-    : (user.email ?? "there");
+    : user.email ?? "there";
 
   switch (user.role) {
     case RolesEnum.ADMIN:
