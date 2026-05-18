@@ -1,10 +1,19 @@
 import { CreateHandoverForm } from "@/components/modules/handovers/CreateHandoverForm";
 import { handoverService } from "@/services/handover.service";
+import { itemService } from "@/services/item.service";
+import { userService } from "@/services/user.service";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHandoversPage() {
-  const { data, error } = await handoverService.adminGetAllHandovers();
+  const [{ data, error }, foundRes, usersRes] = await Promise.all([
+    handoverService.adminGetAllHandovers(),
+    itemService.getAllFoundItems({ pageSize: 100 }),
+    userService.getAllUsers(),
+  ]);
+
+  const foundItems = foundRes.data?.items ?? [];
+  const users = usersRes.data?.items ?? [];
 
   return (
     <div className="space-y-8">
@@ -16,7 +25,7 @@ export default async function AdminHandoversPage() {
             Record and view all item handovers to users
           </p>
         </div>
-        <CreateHandoverForm />
+        <CreateHandoverForm foundItems={foundItems} users={users} />
       </div>
 
       {error && (
