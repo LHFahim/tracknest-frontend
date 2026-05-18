@@ -1,4 +1,4 @@
-import { RecordHandoverButton } from "@/components/modules/handovers/RecordHandoverButton";
+import { ApprovedClaimsTable } from "@/components/modules/handovers/ApprovedClaimsTable";
 import { handoverService } from "@/services/handover.service";
 import { itemService } from "@/services/item.service";
 import { claimService } from "@/services/claim.service";
@@ -42,49 +42,11 @@ export default async function AdminHandoversPage() {
           Approved Claims — Ready for Handover
         </h2>
 
-        {approvedClaims.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-            No approved claims awaiting handover.
-          </div>
-        ) : (
-          <div className="rounded-2xl border border-border overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-muted/40">
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Found Item</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Claimant</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground hidden md:table-cell">Claim Message</th>
-                  <th className="px-4 py-3 text-right font-medium text-muted-foreground">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {approvedClaims.map((claim, i) => {
-                  const foundItem = foundItemsMap[claim.foundItemId];
-                  const claimant = usersMap[claim.claimedBy];
-                  return (
-                    <tr key={claim.id} className={`border-b border-border last:border-0 ${i % 2 === 0 ? "" : "bg-muted/20"}`}>
-                      <td className="px-4 py-3 font-medium">
-                        {foundItem?.title ?? claim.foundItemId}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">
-                        {claimant ? `${claimant.firstName} ${claimant.lastName}` : claim.claimedBy}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground hidden md:table-cell max-w-xs truncate">
-                        {claim.message}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <RecordHandoverButton
-                          foundItemId={claim.foundItemId}
-                          receivedByUserId={claim.claimedBy}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <ApprovedClaimsTable
+          claims={approvedClaims}
+          foundItemsMap={foundItemsMap}
+          usersMap={usersMap}
+        />
       </div>
 
       {/* Existing handovers */}
