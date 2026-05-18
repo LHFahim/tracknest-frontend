@@ -4,6 +4,7 @@ import { itemService } from "@/services/item.service";
 import { claimService } from "@/services/claim.service";
 import { userService } from "@/services/user.service";
 import { ClaimStatus } from "@/types/claim.interface";
+import { FoundItemStatus } from "@/types/item.interface";
 
 export const dynamic = "force-dynamic";
 
@@ -22,9 +23,12 @@ export default async function AdminHandoversPage() {
     (usersRes.data?.items ?? []).map((u) => [u.id, u])
   );
 
-  // Only show approved claims where the found item is still awaiting handover (not yet RETURNED)
+  // Only show approved claims where the found item exists and has NOT been returned yet
   const approvedClaims = (claimsRes.data?.items ?? []).filter(
-    (c) => c.status === ClaimStatus.APPROVED && !!foundItemsMap[c.foundItemId]
+    (c) =>
+      c.status === ClaimStatus.APPROVED &&
+      !!foundItemsMap[c.foundItemId] &&
+      foundItemsMap[c.foundItemId].status !== FoundItemStatus.RETURNED
   );
 
   return (
