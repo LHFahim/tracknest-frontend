@@ -26,20 +26,16 @@ export default async function AdminHandoversPage() {
   // Build a set of foundItem IDs that already have a recorded handover
   const handoveredItemIds = new Set((data?.items ?? []).map((h) => h.foundItem));
 
-  const allApproved = (claimsRes.data?.items ?? []).filter(c => c.status === ClaimStatus.APPROVED);
-  console.log('[handovers page] handoveredItemIds:', [...handoveredItemIds]);
-  console.log('[handovers page] approved claims foundItemId values:', allApproved.map(c => ({ claimId: c.id, foundItemId: c.foundItemId, inMap: !!foundItemsMap[c.foundItemId], mapStatus: foundItemsMap[c.foundItemId]?.status, inHandoveredSet: handoveredItemIds.has(c.foundItemId) })));
-
   // Only show approved claims where:
   // 1. The found item exists and is not yet RETURNED
   // 2. No handover record already exists for this found item
-  const approvedClaims = allApproved.filter(
+  const approvedClaims = (claimsRes.data?.items ?? []).filter(
     (c) =>
+      c.status === ClaimStatus.APPROVED &&
       !!foundItemsMap[c.foundItemId] &&
       foundItemsMap[c.foundItemId].status !== FoundItemStatus.RETURNED &&
       !handoveredItemIds.has(c.foundItemId)
   );
-  console.log('[handovers page] final approvedClaims count:', approvedClaims.length);
 
   return (
     <div className="space-y-8">
