@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useForm } from "@tanstack/react-form";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -19,6 +20,7 @@ interface ClaimButtonProps {
 }
 
 export function ClaimButton({ foundItemId, itemTitle }: ClaimButtonProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const form = useForm({
@@ -42,6 +44,7 @@ export function ClaimButton({ foundItemId, itemTitle }: ClaimButtonProps) {
           id: toastId,
         });
         setOpen(false);
+        router.refresh();
       } catch {
         toast.error("Something went wrong.", { id: toastId });
       }
