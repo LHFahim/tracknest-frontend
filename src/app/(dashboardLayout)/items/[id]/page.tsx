@@ -29,9 +29,6 @@ export default async function ItemViewPage({
   const role = sessionResult.data?.user?.role as string | undefined;
   const userId = sessionResult.data?.user?.id as string | undefined;
 
-  // Debug
-  console.log("[ItemViewPage] id:", id, "claims:", JSON.stringify(claimsResult.data?.items?.map(c => ({ id: c.id, foundItemId: c.foundItemId, status: c.status }))));
-
   // Check if this user already has an active claim on this found item
   const existingClaim = claimsResult.data?.items?.find(
     (c) =>

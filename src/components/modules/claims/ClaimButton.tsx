@@ -6,7 +6,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import * as z from "zod";
 
@@ -19,10 +19,25 @@ interface ClaimButtonProps {
   itemTitle: string;
 }
 
+const STORAGE_KEY = "claimed_items";
+
+function getClaimedItems(): string[] {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"); } catch { return []; }
+}
+
+function markItemClaimed(id: string) {
+  const items = getClaimedItems();
+  if (!items.includes(id)) localStorage.setItem(STORAGE_KEY, JSON.stringify([...items, id]));
+}
+
 export function ClaimButton({ foundItemId, itemTitle }: ClaimButtonProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [claimed, setClaimed] = useState(false);
+
+  useEffect(() => {
+    setClaimed(getClaimedItems().includes(foundItemId));
+  }, [foundItemId]);
 
   const form = useForm({
     defaultValues: { message: "" },
@@ -46,6 +61,7 @@ export function ClaimButton({ foundItemId, itemTitle }: ClaimButtonProps) {
         });
         setOpen(false);
         setClaimed(true);
+        markItemClaimed(foundItemId);
         router.refresh();
       } catch {
         toast.error("Something went wrong.", { id: toastId });
