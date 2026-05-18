@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { IClaim } from "@/types/claim.interface";
 import { IFoundItem } from "@/types/item.interface";
 import { IUser } from "@/types/user.interface";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function ApprovedClaimsTable({ claims, foundItemsMap, usersMap }: Props) {
+  const router = useRouter();
   const [remaining, setRemaining] = useState(claims);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [noteMap, setNoteMap] = useState<Record<string, string>>({});
@@ -36,9 +38,9 @@ export function ApprovedClaimsTable({ claims, foundItemsMap, usersMap }: Props) 
       }
 
       toast.success("Handover recorded successfully", { id: toastId });
-      // Remove the row immediately
       setRemaining((prev) => prev.filter((c) => c.id !== claim.id));
       setShowNoteFor(null);
+      router.refresh();
     } catch {
       toast.error("Something went wrong.", { id: toastId });
     } finally {

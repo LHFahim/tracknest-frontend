@@ -22,8 +22,10 @@ export default async function AdminHandoversPage() {
     (usersRes.data?.items ?? []).map((u) => [u.id, u])
   );
 
+  // Filter out claims that already have a handover recorded
+  const handoveredFoundItemIds = new Set((data?.items ?? []).map((h) => h.foundItem));
   const approvedClaims = (claimsRes.data?.items ?? []).filter(
-    (c) => c.status === ClaimStatus.APPROVED
+    (c) => c.status === ClaimStatus.APPROVED && !handoveredFoundItemIds.has(c.foundItemId)
   );
 
   return (
