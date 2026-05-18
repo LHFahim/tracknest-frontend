@@ -25,6 +25,7 @@ export function ApprovedClaimsTable({ claims, foundItemsMap, usersMap }: Props) 
   const handleConfirm = async (claim: IClaim) => {
     setLoadingId(claim.id);
     const toastId = toast.loading("Recording handover…");
+    console.log('[handover:confirm] claim.id:', claim.id, 'claim.foundItemId:', claim.foundItemId, 'type:', typeof claim.foundItemId);
     try {
       const res = await createHandover({
         foundItem: claim.foundItemId,
@@ -32,11 +33,14 @@ export function ApprovedClaimsTable({ claims, foundItemsMap, usersMap }: Props) 
         note: noteMap[claim.id] || undefined,
       });
 
+      console.log('[handover:confirm] createHandover result:', JSON.stringify(res));
+
       if (res.error) {
         toast.error(res.error.message, { id: toastId });
         return;
       }
 
+      console.log('[handover:confirm] created handover foundItem:', res.data?.foundItem, 'type:', typeof res.data?.foundItem);
       toast.success("Handover recorded successfully", { id: toastId });
       setRemaining((prev) => prev.filter((c) => c.id !== claim.id));
       setShowNoteFor(null);
