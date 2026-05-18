@@ -3,6 +3,7 @@
 import { createHandover } from "@/actions/admin.action";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { IClaim } from "@/types/claim.interface";
 import { IFoundItem } from "@/types/item.interface";
 import { IUser } from "@/types/user.interface";
 import { useForm } from "@tanstack/react-form";
@@ -13,17 +14,18 @@ import * as z from "zod";
 
 const formSchema = z.object({
   foundItem: z.string().min(1, "Please select a found item"),
-  receivedByUser: z.string().min(1, "Please select a recipient"),
+  receivedByUser: z.string().min(1, "Recipient is required"),
   note: z.string(),
 });
 
 interface CreateHandoverFormProps {
   foundItems: IFoundItem[];
+  approvedClaims: IClaim[];
   users: IUser[];
   onSuccess?: () => void;
 }
 
-export function CreateHandoverForm({ foundItems, users, onSuccess }: CreateHandoverFormProps) {
+export function CreateHandoverForm({ foundItems, approvedClaims, users, onSuccess }: CreateHandoverFormProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selectedFoundItemId, setSelectedFoundItemId] = useState("");
@@ -48,6 +50,7 @@ export function CreateHandoverForm({ foundItems, users, onSuccess }: CreateHando
         toast.success("Handover recorded successfully", { id: toastId });
         form.reset();
         setOpen(false);
+        setSelectedFoundItemId("");
         if (onSuccess) onSuccess();
         else router.refresh();
       } catch {
@@ -60,10 +63,9 @@ export function CreateHandoverForm({ foundItems, users, onSuccess }: CreateHando
     return <Button onClick={() => setOpen(true)}>Record Handover</Button>;
   }
 
-  const selectedItem = foundItems.find((i) => i.id === selectedFoundItemId);
-  const eligibleUsers = selectedItem
-    ? users.filter((u) => u.id !== selectedItem.foundBy)
-    : users;
+  // Find the approved claim for the selected found item
+  const approvedClaim = approvedClaims.find((c) => c.foundItemId === selectedFoundItemId);
+  const claimant = approvedClaim ? users.find((u) => u.id === approvedClaim.claimedBy) : null;
 
   const selectClass =
     "w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
@@ -87,8 +89,12 @@ export function CreateHandoverForm({ foundItems, users, onSuccess }: CreateHando
                     id={field.name}
                     value={field.state.value}
                     onChange={(e) => {
-                      field.handleChange(e.target.value);
-                      setSelectedFoundItemId(e.target.value);
+                      const itemId = e.target.value;
+                      field.handleChange(itemId);
+                      setSelectedFoundItemId(itemId);
+                      // Auto-fill recipient from approved claim
+                      const claim = approvedClaims.find((c) => c.foundItemId === itemId);
+                      form.setFieldValue("receivedByUser", claim?.claimedBy ?? "");
                     }}
                     className={selectClass}
                   >
@@ -105,26 +111,30 @@ export function CreateHandoverForm({ foundItems, users, onSuccess }: CreateHando
             }}
           </form.Field>
 
-          {/* Recipient dropdown */}
+          {/* Recipient — auto-filled from approved claim */}
           <form.Field name="receivedByUser">
             {(field) => {
               const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
               return (
                 <Field data-invalid={isInvalid}>
                   <FieldLabel htmlFor={field.name}>Recipient *</FieldLabel>
-                  <select
-                    id={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    className={selectClass}
-                  >
-                    <option value="">Select a user…</option>
-                    {eligibleUsers.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.firstName} {user.lastName} — {user.email}
-                      </option>
-                    ))}
-                  </select>
+                  {selectedFoundItemId && claimant ? (
+                    // Auto-filled from approved claim — show as read-only
+                    <div className={`${selectClass} bg-muted/40 cursor-not-allowed`}>
+                      {claimant.firstName} {claimant.lastName} — {claimant.email}
+                      <input type="hidden" value={claimant.id} />
+                    </div>
+                  ) : selectedFoundItemId && !approvedClaim ? (
+                    // Item selected but no approved claim found
+                    <p className="text-sm text-destructive">
+                      No approved claim found for this item. Approve a claim first.
+                    </p>
+                  ) : (
+                    // No item selected yet
+                    <div className={`${selectClass} bg-muted/40 text-muted-foreground cursor-not-allowed`}>
+                      Select a found item first…
+                    </div>
+                  )}
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
               );
@@ -151,8 +161,10 @@ export function CreateHandoverForm({ foundItems, users, onSuccess }: CreateHando
         </FieldGroup>
 
         <div className="flex gap-3 pt-1">
-          <Button type="submit" className="flex-1">Record Handover</Button>
-          <Button type="button" variant="outline" onClick={() => { form.reset(); setOpen(false); }}>
+          <Button type="submit" disabled={!approvedClaim} className="flex-1">
+            Record Handover
+          </Button>
+          <Button type="button" variant="outline" onClick={() => { form.reset(); setOpen(false); setSelectedFoundItemId(""); }}>
             Cancel
           </Button>
         </div>
