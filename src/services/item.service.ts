@@ -107,9 +107,10 @@ export const itemService = {
       });
 
       const data = await res.json();
+      console.log("[deleteLostItem] status:", res.status, "body:", JSON.stringify(data));
 
       if (!res.ok) {
-        return { data: null, error: { message: "Error: Could not delete lost item." } };
+        return { data: null, error: { message: data?.message ?? "Error: Could not delete lost item." } };
       }
 
       return { data, error: null };

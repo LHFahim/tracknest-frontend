@@ -33,6 +33,7 @@ import {
 } from "@/types/item.interface";
 import { MoreHorizontalIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -43,6 +44,7 @@ export function ItemTable({
   lostItems: ILostItem[];
   foundItems: IFoundItem[];
 }) {
+  const router = useRouter();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handleDelete = async (item: ILostItem | IFoundItem) => {
@@ -60,6 +62,7 @@ export function ItemTable({
       }
 
       toast.success("Item deleted successfully", { id: toastId });
+      router.refresh();
     } catch {
       toast.error("Something went wrong", { id: toastId });
     } finally {
@@ -80,6 +83,7 @@ export function ItemTable({
       }
 
       toast.success("Status updated", { id: toastId });
+      router.refresh();
     } catch {
       toast.error("Something went wrong", { id: toastId });
     } finally {
@@ -100,6 +104,7 @@ export function ItemTable({
       }
 
       toast.success("Status updated", { id: toastId });
+      router.refresh();
     } catch {
       toast.error("Something went wrong", { id: toastId });
     } finally {
