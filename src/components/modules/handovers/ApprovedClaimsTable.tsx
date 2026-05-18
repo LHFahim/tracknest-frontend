@@ -39,9 +39,12 @@ export function ApprovedClaimsTable({ claims, foundItemsMap, usersMap }: Props) 
       }
 
       // Mark the found item as RETURNED in the DB
-      await updateFoundItemStatus(claim.foundItemId, FoundItemStatus.RETURNED);
-
-      toast.success("Handover recorded successfully", { id: toastId });
+      const statusRes = await updateFoundItemStatus(claim.foundItemId, FoundItemStatus.RETURNED);
+      if (statusRes.error) {
+        toast.warning(`Handover recorded, but item status update failed: ${statusRes.error.message}`, { id: toastId });
+      } else {
+        toast.success("Handover recorded successfully", { id: toastId });
+      }
       setRemaining((prev) => prev.filter((c) => c.id !== claim.id));
       setShowNoteFor(null);
       router.refresh();

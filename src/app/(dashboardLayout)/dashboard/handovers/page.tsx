@@ -23,12 +23,18 @@ export default async function AdminHandoversPage() {
     (usersRes.data?.items ?? []).map((u) => [u.id, u])
   );
 
-  // Only show approved claims where the found item exists and has NOT been returned yet
+  // Build a set of foundItem IDs that already have a recorded handover
+  const handoveredItemIds = new Set((data?.items ?? []).map((h) => h.foundItem));
+
+  // Only show approved claims where:
+  // 1. The found item exists and is not yet RETURNED
+  // 2. No handover record already exists for this found item
   const approvedClaims = (claimsRes.data?.items ?? []).filter(
     (c) =>
       c.status === ClaimStatus.APPROVED &&
       !!foundItemsMap[c.foundItemId] &&
-      foundItemsMap[c.foundItemId].status !== FoundItemStatus.RETURNED
+      foundItemsMap[c.foundItemId].status !== FoundItemStatus.RETURNED &&
+      !handoveredItemIds.has(c.foundItemId)
   );
 
   return (
