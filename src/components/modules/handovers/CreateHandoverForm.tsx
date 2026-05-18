@@ -26,6 +26,7 @@ interface CreateHandoverFormProps {
 export function CreateHandoverForm({ foundItems, users, onSuccess }: CreateHandoverFormProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [selectedFoundItemId, setSelectedFoundItemId] = useState("");
 
   const form = useForm({
     defaultValues: { foundItem: "", receivedByUser: "", note: "" },
@@ -59,6 +60,11 @@ export function CreateHandoverForm({ foundItems, users, onSuccess }: CreateHando
     return <Button onClick={() => setOpen(true)}>Record Handover</Button>;
   }
 
+  const selectedItem = foundItems.find((i) => i.id === selectedFoundItemId);
+  const eligibleUsers = selectedItem
+    ? users.filter((u) => u.id !== selectedItem.foundBy)
+    : users;
+
   const selectClass =
     "w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
@@ -80,7 +86,10 @@ export function CreateHandoverForm({ foundItems, users, onSuccess }: CreateHando
                   <select
                     id={field.name}
                     value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value);
+                      setSelectedFoundItemId(e.target.value);
+                    }}
                     className={selectClass}
                   >
                     <option value="">Select a found item…</option>
@@ -110,7 +119,7 @@ export function CreateHandoverForm({ foundItems, users, onSuccess }: CreateHando
                     className={selectClass}
                   >
                     <option value="">Select a user…</option>
-                    {users.map((user) => (
+                    {eligibleUsers.map((user) => (
                       <option key={user.id} value={user.id}>
                         {user.firstName} {user.lastName} — {user.email}
                       </option>

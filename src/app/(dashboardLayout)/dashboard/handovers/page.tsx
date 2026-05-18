@@ -12,7 +12,9 @@ export default async function AdminHandoversPage() {
     userService.getAllUsers(),
   ]);
 
-  const foundItems = foundRes.data?.items ?? [];
+  const foundItems = (foundRes.data?.items ?? []).filter(
+    (item) => item.status === "READY_FOR_HANDOVER" || item.status === "IN_CUSTODY"
+  );
   const users = usersRes.data?.items ?? [];
 
   return (
