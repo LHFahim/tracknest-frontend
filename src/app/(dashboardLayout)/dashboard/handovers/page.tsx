@@ -1,20 +1,29 @@
 import { CreateHandoverForm } from "@/components/modules/handovers/CreateHandoverForm";
 import { handoverService } from "@/services/handover.service";
 import { itemService } from "@/services/item.service";
+import { claimService } from "@/services/claim.service";
 import { userService } from "@/services/user.service";
+import { ClaimStatus } from "@/types/claim.interface";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHandoversPage() {
-  const [{ data, error }, foundRes, usersRes] = await Promise.all([
+  const [{ data, error }, foundRes, claimsRes, usersRes] = await Promise.all([
     handoverService.adminGetAllHandovers(),
     itemService.getAllFoundItems({ pageSize: 100 }),
+    claimService.adminGetAllClaims(),
     userService.getAllUsers(),
   ]);
 
   const foundItems = (foundRes.data?.items ?? []).filter(
     (item) => item.status === "READY_FOR_HANDOVER" || item.status === "IN_CUSTODY"
   );
+
+  // Only approved claims
+  const approvedClaims = (claimsRes.data?.items ?? []).filter(
+    (c) => c.status === ClaimStatus.APPROVED
+  );
+
   const users = usersRes.data?.items ?? [];
 
   return (
@@ -27,7 +36,7 @@ export default async function AdminHandoversPage() {
             Record and view all item handovers to users
           </p>
         </div>
-        <CreateHandoverForm foundItems={foundItems} users={users} />
+        <CreateHandoverForm foundItems={foundItems} approvedClaims={approvedClaims} users={users} />
       </div>
 
       {error && (
