@@ -1,6 +1,7 @@
 import { ItemTable } from "@/components/modules/items/ItemTable";
 import { ItemsSearchBar } from "@/components/modules/items/ItemsSearchBar";
 import { itemService } from "@/services/item.service";
+import { userService } from "@/services/user.service";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -43,10 +44,13 @@ export default async function ItemsPage({
   const { search = "", page: pageParam } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 
-  const [lostRes, foundRes] = await Promise.all([
+  const [lostRes, foundRes, sessionRes] = await Promise.all([
     itemService.getAllLostItems({ search, page, pageSize: PAGE_SIZE }),
     itemService.getAllFoundItems({ search, page, pageSize: PAGE_SIZE }),
+    userService.getSession(),
   ]);
+
+  const role = sessionRes.data?.user?.role as string | undefined;
 
   const error = lostRes.error ?? foundRes.error;
 
@@ -79,6 +83,7 @@ export default async function ItemsPage({
           <ItemTable
             lostItems={lostRes.data?.items ?? []}
             foundItems={foundRes.data?.items ?? []}
+            role={role}
           />
 
           {/* Pagination */}

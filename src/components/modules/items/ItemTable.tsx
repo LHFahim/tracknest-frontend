@@ -40,10 +40,13 @@ import { toast } from "sonner";
 export function ItemTable({
   lostItems,
   foundItems,
+  role,
 }: {
   lostItems: ILostItem[];
   foundItems: IFoundItem[];
+  role?: string;
 }) {
+  const isAdminOrStaff = role === "ADMIN" || role === "STAFF";
   const router = useRouter();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
@@ -189,7 +192,7 @@ export function ItemTable({
                           <Link href={`/items/${item.id}`}>View details</Link>
                         </DropdownMenuItem>
 
-                        {lost && item.status === LostItemStatus.OPEN && (
+                        {isAdminOrStaff && lost && item.status === LostItemStatus.OPEN && (
                           <DropdownMenuItem
                             onClick={() =>
                               handleLostStatusChange(
@@ -201,7 +204,7 @@ export function ItemTable({
                             Mark Claim Requested
                           </DropdownMenuItem>
                         )}
-                        {lost && item.status === LostItemStatus.CLAIM_REQUESTED && (
+                        {isAdminOrStaff && lost && item.status === LostItemStatus.CLAIM_REQUESTED && (
                           <>
                             <DropdownMenuItem
                               onClick={() =>
@@ -225,7 +228,7 @@ export function ItemTable({
                             </DropdownMenuItem>
                           </>
                         )}
-                        {lost &&
+                        {isAdminOrStaff && lost &&
                           item.status !== LostItemStatus.CLOSED && (
                             <DropdownMenuItem
                               onClick={() =>
@@ -239,7 +242,7 @@ export function ItemTable({
                             </DropdownMenuItem>
                           )}
 
-                        {!lost &&
+                        {isAdminOrStaff && !lost &&
                           item.status === FoundItemStatus.REPORTED && (
                             <DropdownMenuItem
                               onClick={() =>
@@ -252,7 +255,7 @@ export function ItemTable({
                               Mark In Custody
                             </DropdownMenuItem>
                           )}
-                        {!lost &&
+                        {isAdminOrStaff && !lost &&
                           item.status === FoundItemStatus.IN_CUSTODY && (
                             <DropdownMenuItem
                               onClick={() =>
@@ -266,13 +269,17 @@ export function ItemTable({
                             </DropdownMenuItem>
                           )}
 
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          variant="destructive"
-                          onClick={() => handleDelete(item)}
-                        >
-                          Delete
-                        </DropdownMenuItem>
+                        {isAdminOrStaff && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              variant="destructive"
+                              onClick={() => handleDelete(item)}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
