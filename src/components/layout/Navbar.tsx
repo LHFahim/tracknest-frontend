@@ -46,15 +46,7 @@ export default function Navbar({ isLoggedIn }: NavbarProps) {
           <ModeToggle />
 
           {isLoggedIn ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="hidden rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium transition hover:bg-muted sm:inline-flex"
-              >
-                Dashboard
-              </Link>
-              <SignOutButton />
-            </>
+            <SignOutButton />
           ) : (
             <>
               <Link
