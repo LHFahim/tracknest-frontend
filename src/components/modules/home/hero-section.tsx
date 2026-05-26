@@ -1,7 +1,71 @@
-import Link from 'next/link';
-import { ArrowRight, CheckCircle2, Search, ShieldCheck, Sparkles } from 'lucide-react';
+import Link from "next/link";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Search,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
-export default function HeroSection() {
+type RecentActivity = {
+  title: string;
+  subtitle: string;
+  status: string;
+  type: "lost" | "found";
+};
+
+interface HeroSectionProps {
+  totalLostItems: number;
+  totalFoundItems: number;
+  matchedCases: number;
+  recoveryRate: number;
+  recentActivities: RecentActivity[];
+}
+
+function getStatusStyle(status: string) {
+  const normalizedStatus = status.toUpperCase();
+
+  if (
+    normalizedStatus.includes("APPROVED") ||
+    normalizedStatus.includes("RETURNED") ||
+    normalizedStatus.includes("MATCHED")
+  ) {
+    return "bg-emerald-100 text-emerald-700";
+  }
+
+  if (
+    normalizedStatus.includes("PENDING") ||
+    normalizedStatus.includes("CLAIM") ||
+    normalizedStatus.includes("REVIEW")
+  ) {
+    return "bg-amber-100 text-amber-700";
+  }
+
+  if (
+    normalizedStatus.includes("OPEN") ||
+    normalizedStatus.includes("REPORTED") ||
+    normalizedStatus.includes("NEW")
+  ) {
+    return "bg-blue-100 text-blue-700";
+  }
+
+  return "bg-muted text-muted-foreground";
+}
+
+function formatStatus(status: string) {
+  return status
+    .replaceAll("_", " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+export default function HeroSection({
+  totalLostItems,
+  totalFoundItems,
+  matchedCases,
+  recoveryRate,
+  recentActivities,
+}: HeroSectionProps) {
   return (
     <section className="relative overflow-hidden bg-background">
       <div className="absolute inset-0 -z-10">
@@ -41,7 +105,7 @@ export default function HeroSection() {
               </Link>
 
               <Link
-                href="/lost-items"
+                href="/items"
                 className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-muted"
               >
                 Browse Items
@@ -51,17 +115,23 @@ export default function HeroSection() {
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
               <div className="flex items-center gap-2 rounded-xl border border-border bg-background/70 px-4 py-3 shadow-sm backdrop-blur">
                 <ShieldCheck className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium text-foreground">Secure claims</span>
+                <span className="text-sm font-medium text-foreground">
+                  Secure claims
+                </span>
               </div>
 
               <div className="flex items-center gap-2 rounded-xl border border-border bg-background/70 px-4 py-3 shadow-sm backdrop-blur">
                 <Search className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium text-foreground">Smart search</span>
+                <span className="text-sm font-medium text-foreground">
+                  Smart search
+                </span>
               </div>
 
               <div className="flex items-center gap-2 rounded-xl border border-border bg-background/70 px-4 py-3 shadow-sm backdrop-blur">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium text-foreground">Easy reporting</span>
+                <span className="text-sm font-medium text-foreground">
+                  Easy reporting
+                </span>
               </div>
             </div>
           </div>
@@ -70,9 +140,14 @@ export default function HeroSection() {
             <div className="relative rounded-3xl border border-border bg-background/90 p-6 shadow-2xl backdrop-blur">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">TrackNest Dashboard</p>
-                  <h3 className="text-xl font-semibold text-foreground">Lost &amp; Found Overview</h3>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    TrackNest Dashboard
+                  </p>
+                  <h3 className="text-xl font-semibold text-foreground">
+                    Lost &amp; Found Overview
+                  </h3>
                 </div>
+
                 <div className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                   Live System
                 </div>
@@ -80,50 +155,70 @@ export default function HeroSection() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl border border-border bg-muted/40 p-4">
-                  <p className="text-sm text-muted-foreground">Reported Lost Items</p>
-                  <h4 className="mt-2 text-3xl font-bold text-foreground">124</h4>
-                  <p className="mt-1 text-xs text-emerald-600">+12 this week</p>
+                  <p className="text-sm text-muted-foreground">
+                    Reported Lost Items
+                  </p>
+                  <h4 className="mt-2 text-3xl font-bold text-foreground">
+                    {totalLostItems}
+                  </h4>
+                  <p className="mt-1 text-xs text-emerald-600">
+                    Real reports from system
+                  </p>
                 </div>
 
                 <div className="rounded-2xl border border-border bg-muted/40 p-4">
-                  <p className="text-sm text-muted-foreground">Matched Cases</p>
-                  <h4 className="mt-2 text-3xl font-bold text-foreground">87</h4>
-                  <p className="mt-1 text-xs text-emerald-600">Fast recovery flow</p>
+                  <p className="text-sm text-muted-foreground">
+                    Found Item Reports
+                  </p>
+                  <h4 className="mt-2 text-3xl font-bold text-foreground">
+                    {totalFoundItems}
+                  </h4>
+                  <p className="mt-1 text-xs text-emerald-600">
+                    Items reported as found
+                  </p>
                 </div>
 
                 <div className="rounded-2xl border border-border bg-muted/40 p-4 sm:col-span-2">
-                  <p className="text-sm text-muted-foreground">Recent Activity</p>
+                  <p className="text-sm text-muted-foreground">
+                    Recent Activity
+                  </p>
 
                   <div className="mt-4 space-y-3">
-                    <div className="flex items-center justify-between rounded-xl bg-background px-4 py-3 shadow-sm">
-                      <div>
-                        <p className="text-sm font-medium text-foreground">Black Backpack</p>
-                        <p className="text-xs text-muted-foreground">Found near Library Building</p>
-                      </div>
-                      <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
-                        Pending Claim
-                      </span>
-                    </div>
+                    {recentActivities.length > 0 ? (
+                      recentActivities.map((activity, index) => (
+                        <div
+                          key={`${activity.type}-${activity.title}-${index}`}
+                          className="flex items-center justify-between gap-4 rounded-xl bg-background px-4 py-3 shadow-sm"
+                        >
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {activity.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {activity.subtitle}
+                            </p>
+                          </div>
 
-                    <div className="flex items-center justify-between rounded-xl bg-background px-4 py-3 shadow-sm">
-                      <div>
-                        <p className="text-sm font-medium text-foreground">Student ID Card</p>
-                        <p className="text-xs text-muted-foreground">Matched with lost report</p>
+                          <span
+                            className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
+                              activity.status
+                            )}`}
+                          >
+                            {formatStatus(activity.status)}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="rounded-xl border border-dashed border-border bg-background px-4 py-5 text-center">
+                        <p className="text-sm font-medium text-foreground">
+                          No activity yet
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Lost and found reports will appear here after users
+                          submit them.
+                        </p>
                       </div>
-                      <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
-                        Matched
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between rounded-xl bg-background px-4 py-3 shadow-sm">
-                      <div>
-                        <p className="text-sm font-medium text-foreground">Water Bottle</p>
-                        <p className="text-xs text-muted-foreground">Reported by campus security</p>
-                      </div>
-                      <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-                        New Report
-                      </span>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -131,12 +226,18 @@ export default function HeroSection() {
 
             <div className="absolute -bottom-6 -left-6 hidden rounded-2xl border border-border bg-background p-4 shadow-xl md:block">
               <p className="text-xs text-muted-foreground">Recovery rate</p>
-              <p className="text-2xl font-bold text-foreground">78%</p>
+              <p className="text-2xl font-bold text-foreground">
+                {recoveryRate}%
+              </p>
             </div>
 
             <div className="absolute -right-4 -top-6 hidden rounded-2xl border border-border bg-background p-4 shadow-xl md:block">
-              <p className="text-xs text-muted-foreground">Verification workflow</p>
-              <p className="text-sm font-semibold text-foreground">Safer item handover</p>
+              <p className="text-xs text-muted-foreground">
+                Matched / returned cases
+              </p>
+              <p className="text-sm font-semibold text-foreground">
+                {matchedCases} successful recoveries
+              </p>
             </div>
           </div>
         </div>
