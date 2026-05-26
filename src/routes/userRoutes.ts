@@ -1,12 +1,9 @@
 import { IRoute } from "@/types";
 
-/** Sidebar routes for regular Users (panelType: "USER") */
 export const userRoutes: IRoute[] = [
   {
     title: "Overview",
-    items: [
-      { title: "Dashboard", url: "/dashboard" },
-    ],
+    items: [{ title: "Dashboard", url: "/dashboard" }],
   },
   {
     title: "Items",
@@ -14,6 +11,7 @@ export const userRoutes: IRoute[] = [
       { title: "Browse All Items", url: "/items" },
       { title: "Report Lost Item", url: "/dashboard/report-lost" },
       { title: "Report Found Item", url: "/dashboard/report-found" },
+      { title: "AI Matching Assistant", url: "/dashboard/ai-matching" },
       { title: "My Claims", url: "/dashboard/my-claims" },
     ],
   },
@@ -27,8 +25,6 @@ export const userRoutes: IRoute[] = [
   },
   {
     title: "Account",
-    items: [
-      { title: "Edit Profile", url: "/dashboard/profile" },
-    ],
+    items: [{ title: "Edit Profile", url: "/dashboard/profile" }],
   },
 ];
