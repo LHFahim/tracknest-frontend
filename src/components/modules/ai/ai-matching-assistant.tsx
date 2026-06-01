@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   AlertTriangle,
+  ArrowRight,
   BrainCircuit,
   CalendarDays,
   CheckCircle2,
@@ -8,7 +9,9 @@ import {
   Info,
   MapPin,
   PackageSearch,
+  SearchCheck,
   Sparkles,
+  Target,
 } from "lucide-react";
 
 import { AIMatchResult } from "@/lib/ai-matching";
@@ -19,6 +22,15 @@ interface AIMatchingAssistantProps {
   lostItems: ILostItem[];
   foundItems: IFoundItem[];
 }
+
+const scoreRules = [
+  { label: "Category", value: "25 pts" },
+  { label: "Color", value: "20 pts" },
+  { label: "Brand", value: "15 pts" },
+  { label: "Title & Description", value: "20 pts" },
+  { label: "Location", value: "10 pts" },
+  { label: "Date", value: "10 pts" },
+];
 
 function getScoreBadgeClass(score: number) {
   if (score >= 70) {
@@ -71,10 +83,16 @@ export default function AIMatchingAssistant({
   lostItems,
   foundItems,
 }: AIMatchingAssistantProps) {
+  const topMatch = matches[0];
+  const highMatches = matches.filter((match) => match.matchScore >= 70).length;
+  const mediumMatches = matches.filter(
+    (match) => match.matchScore >= 40 && match.matchScore < 70
+  ).length;
+
   return (
     <div className="space-y-8">
-      <section className="rounded-3xl border border-border bg-card p-6 shadow-sm">
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+      <section className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
+        <div className="grid gap-8 p-6 lg:grid-cols-[1.15fr_0.85fr] lg:p-8">
           <div>
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-muted-foreground">
               <Sparkles className="h-4 w-4 text-primary" />
@@ -91,7 +109,7 @@ export default function AIMatchingAssistant({
               brand, title, description, location, and date similarity.
             </p>
 
-            <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
+            <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
               <div className="flex gap-3">
                 <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
                 <p>
@@ -103,24 +121,106 @@ export default function AIMatchingAssistant({
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
             <div className="rounded-2xl border border-border bg-background p-5">
-              <p className="text-sm text-muted-foreground">Lost Reports</p>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">Lost Reports</p>
+                <FileSearch className="h-5 w-5 text-primary" />
+              </div>
               <p className="mt-2 text-3xl font-bold">{lostItems.length}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Reports available for comparison
+              </p>
             </div>
 
             <div className="rounded-2xl border border-border bg-background p-5">
-              <p className="text-sm text-muted-foreground">Found Reports</p>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">Found Reports</p>
+                <PackageSearch className="h-5 w-5 text-primary" />
+              </div>
               <p className="mt-2 text-3xl font-bold">{foundItems.length}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Found item records checked by assistant
+              </p>
             </div>
 
-            <div className="rounded-2xl border border-border bg-background p-5">
-              <p className="text-sm text-muted-foreground">Possible Matches</p>
+            <div className="rounded-2xl border border-border bg-background p-5 sm:col-span-2 lg:col-span-1">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Possible Matches
+                </p>
+                <SearchCheck className="h-5 w-5 text-primary" />
+              </div>
               <p className="mt-2 text-3xl font-bold">{matches.length}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {highMatches} high match, {mediumMatches} medium match
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-border bg-muted/20 p-6 lg:p-8">
+          <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+            <div>
+              <div className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" />
+                <h2 className="text-lg font-semibold">How the score works</h2>
+              </div>
+
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                The assistant uses an explainable scoring approach. Each field
+                contributes points to the final match score, so staff can clearly
+                understand why a match was suggested.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {scoreRules.map((rule) => (
+                <div
+                  key={rule.label}
+                  className="rounded-2xl border border-border bg-background p-4"
+                >
+                  <p className="text-xs text-muted-foreground">{rule.label}</p>
+                  <p className="mt-1 text-lg font-bold">{rule.value}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
+
+      {topMatch && (
+        <section className="rounded-3xl border border-primary/20 bg-primary/5 p-6 shadow-sm">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="mb-2 inline-flex items-center gap-2 text-sm font-medium text-primary">
+                <BrainCircuit className="h-4 w-4" />
+                Top AI Recommendation
+              </div>
+
+              <h2 className="text-2xl font-bold">
+                {topMatch.lostItem.title} ↔ {topMatch.foundItem.title}
+              </h2>
+
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">
+                {topMatch.summary}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-background p-5 text-center shadow-sm">
+              <p className="text-xs text-muted-foreground">Highest Score</p>
+              <p className="mt-1 text-4xl font-bold">{topMatch.matchScore}%</p>
+              <span
+                className={`mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getScoreBadgeClass(
+                  topMatch.matchScore
+                )}`}
+              >
+                {topMatch.matchLevel} Match
+              </span>
+            </div>
+          </div>
+        </section>
+      )}
 
       {matches.length === 0 ? (
         <section className="rounded-3xl border border-dashed border-border bg-card p-10 text-center shadow-sm">
@@ -333,6 +433,7 @@ export default function AIMatchingAssistant({
                   className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
                 >
                   View Found Item
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </div>
             </article>
