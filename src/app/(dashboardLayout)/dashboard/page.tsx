@@ -16,6 +16,7 @@ import {
   BarChart3,
   ShieldAlert,
   Eye,
+  BrainCircuit,
 } from "lucide-react";
 
 // ─── Shared stat card ────────────────────────────────────────────────────────
@@ -80,11 +81,7 @@ function ActionCard({
 
 // ─── Role dashboards ──────────────────────────────────────────────────────────
 
-async function AdminDashboard({
-  name,
-}: {
-  name: string;
-}) {
+async function AdminDashboard({ name }: { name: string }) {
   const [lostRes, foundRes] = await Promise.all([
     itemService.getAllLostItems(),
     itemService.getAllFoundItems(),
@@ -93,9 +90,8 @@ async function AdminDashboard({
   const totalLost = lostRes.data?.pagination?.total ?? 0;
   const totalFound = foundRes.data?.pagination?.total ?? 0;
   const openClaims =
-    lostRes.data?.items?.filter(
-      (i) => i.status === "CLAIM_REQUESTED"
-    ).length ?? 0;
+    lostRes.data?.items?.filter((i) => i.status === "CLAIM_REQUESTED").length ??
+    0;
 
   return (
     <div className="space-y-8">
@@ -142,6 +138,12 @@ async function AdminDashboard({
           Quick Actions
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ActionCard
+            title="AI Matching Assistant"
+            description="Compare lost and found reports using smart match scoring"
+            href="/dashboard/ai-matching"
+            icon={BrainCircuit}
+          />
           <ActionCard
             title="Manage Users"
             description="View, ban, or update user accounts"
@@ -193,9 +195,8 @@ async function StaffDashboard({ name }: { name: string }) {
   const totalLost = lostRes.data?.pagination?.total ?? 0;
   const totalFound = foundRes.data?.pagination?.total ?? 0;
   const openClaims =
-    lostRes.data?.items?.filter(
-      (i) => i.status === "CLAIM_REQUESTED"
-    ).length ?? 0;
+    lostRes.data?.items?.filter((i) => i.status === "CLAIM_REQUESTED").length ??
+    0;
 
   return (
     <div className="space-y-8">
@@ -209,11 +210,7 @@ async function StaffDashboard({ name }: { name: string }) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard
-          label="Lost Reports"
-          value={totalLost}
-          icon={PackageSearch}
-        />
+        <StatCard label="Lost Reports" value={totalLost} icon={PackageSearch} />
         <StatCard
           label="Found Reports"
           value={totalFound}
@@ -232,6 +229,12 @@ async function StaffDashboard({ name }: { name: string }) {
           Quick Actions
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ActionCard
+            title="AI Matching Assistant"
+            description="Review suggested matches between lost and found reports"
+            href="/dashboard/ai-matching"
+            icon={BrainCircuit}
+          />
           <ActionCard
             title="Manage Users"
             description="View and manage user accounts"
@@ -298,6 +301,12 @@ function UserDashboard({ name }: { name: string }) {
             icon={SearchCheck}
           />
           <ActionCard
+            title="AI Matching Assistant"
+            description="Find possible matches using smart item comparison"
+            href="/dashboard/ai-matching"
+            icon={BrainCircuit}
+          />
+          <ActionCard
             title="My Lost Reports"
             description="Track items you've reported missing"
             href="/dashboard/my-lost-items"
@@ -325,12 +334,16 @@ function UserDashboard({ name }: { name: string }) {
 
 export default async function DashboardPage() {
   const { data } = await userService.getSession();
-  if (!data?.user) redirect("/login");
+
+  if (!data?.user) {
+    redirect("/login");
+  }
 
   const user = data.user;
+
   const name = user.firstName
     ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`
-    : (user.email ?? "there");
+    : user.email ?? "there";
 
   switch (user.role) {
     case RolesEnum.ADMIN:
