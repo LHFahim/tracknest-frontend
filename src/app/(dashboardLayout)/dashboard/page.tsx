@@ -289,34 +289,16 @@ function UserDashboard({ name }: { name: string }) {
             icon={PlusCircle}
           />
           <ActionCard
-            title="Report a Found Item"
-            description="Let others know you've found something"
-            href="/dashboard/report-found"
-            icon={PackageCheck}
-          />
-          <ActionCard
             title="Browse Items"
-            description="Search all lost & found listings"
+            description="Search all lost &amp; found listings"
             href="/items"
             icon={SearchCheck}
-          />
-          <ActionCard
-            title="AI Matching Assistant"
-            description="Find possible matches using smart item comparison"
-            href="/dashboard/ai-matching"
-            icon={BrainCircuit}
           />
           <ActionCard
             title="My Lost Reports"
             description="Track items you've reported missing"
             href="/dashboard/my-lost-items"
             icon={PackageSearch}
-          />
-          <ActionCard
-            title="My Found Reports"
-            description="Items you've reported finding"
-            href="/dashboard/my-found-items"
-            icon={FolderOpen}
           />
           <ActionCard
             title="My Claims"

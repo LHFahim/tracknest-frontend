@@ -36,11 +36,13 @@ export function ItemDetail({
   role,
   userId,
   existingClaimId,
+  myLostItems = [],
 }: {
   item: ILostItem | IFoundItem;
   role?: string;
   userId?: string;
   existingClaimId?: string;
+  myLostItems?: { id: string; title: string }[];
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -336,7 +338,7 @@ export function ItemDetail({
               </Link>
             </Button>
           ) : (
-            <ClaimButton foundItemId={item.id} itemTitle={item.title} />
+            <ClaimButton foundItemId={item.id} itemTitle={item.title} myLostItems={myLostItems} />
           )
         )}
 

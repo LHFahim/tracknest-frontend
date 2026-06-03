@@ -11,6 +11,7 @@ export const staffRoutes: IRoute[] = [
       { title: "Users", url: "/dashboard/users" },
       { title: "Categories", url: "/dashboard/categories" },
       { title: "All Items", url: "/items" },
+      { title: "Report Found Item", url: "/dashboard/report-found" },
     ],
   },
   {

@@ -10,8 +10,6 @@ export const userRoutes: IRoute[] = [
     items: [
       { title: "Browse All Items", url: "/items" },
       { title: "Report Lost Item", url: "/dashboard/report-lost" },
-      { title: "Report Found Item", url: "/dashboard/report-found" },
-      { title: "AI Matching Assistant", url: "/dashboard/ai-matching" },
       { title: "My Claims", url: "/dashboard/my-claims" },
     ],
   },
@@ -19,7 +17,6 @@ export const userRoutes: IRoute[] = [
     title: "My Activity",
     items: [
       { title: "My Lost Reports", url: "/dashboard/my-lost-items" },
-      { title: "My Found Reports", url: "/dashboard/my-found-items" },
       { title: "My Handovers", url: "/dashboard/my-handovers" },
     ],
   },

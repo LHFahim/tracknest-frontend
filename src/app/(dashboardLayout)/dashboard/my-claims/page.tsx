@@ -26,7 +26,7 @@ export default async function MyClaimsPage() {
           </p>
         </div>
         <Button asChild variant="outline">
-          <Link href="/items">Browse Items</Link>
+          <Link href="/items?type=found">Browse Found Items</Link>
         </Button>
       </div>
 
@@ -39,8 +39,11 @@ export default async function MyClaimsPage() {
       {data && data.items.length === 0 && (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center">
           <p className="text-muted-foreground">You haven&apos;t submitted any claims yet.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Browse found items, then attach one of your lost reports to start a claim.
+          </p>
           <Button asChild className="mt-4">
-            <Link href="/items">Browse Found Items</Link>
+            <Link href="/items?type=found">Browse Found Items</Link>
           </Button>
         </div>
       )}

@@ -39,14 +39,16 @@ function PageButton({
 export default async function ItemsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; page?: string }>;
+  searchParams: Promise<{ search?: string; page?: string; type?: string }>;
 }) {
-  const { search = "", page: pageParam } = await searchParams;
+  const { search = "", page: pageParam, type } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+  const showOnlyFound = type === "found";
+  const showOnlyLost = type === "lost";
 
   const [lostRes, foundRes, sessionRes] = await Promise.all([
-    itemService.getAllLostItems({ search, page, pageSize: PAGE_SIZE }),
-    itemService.getAllFoundItems({ search, page, pageSize: PAGE_SIZE }),
+    showOnlyFound ? Promise.resolve({ data: null, error: null }) : itemService.getAllLostItems({ search, page, pageSize: PAGE_SIZE }),
+    showOnlyLost  ? Promise.resolve({ data: null, error: null }) : itemService.getAllFoundItems({ search, page, pageSize: PAGE_SIZE }),
     userService.getSession(),
   ]);
 
@@ -54,7 +56,6 @@ export default async function ItemsPage({
 
   const error = lostRes.error ?? foundRes.error;
 
-  // Pagination — use the larger of the two totals
   const lostTotal = lostRes.data?.pagination?.total ?? 0;
   const foundTotal = foundRes.data?.pagination?.total ?? 0;
   const maxTotal = Math.max(lostTotal, foundTotal);
@@ -64,9 +65,15 @@ export default async function ItemsPage({
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Lost &amp; Found Items</h1>
+          <h1 className="text-2xl font-semibold">
+            {showOnlyFound ? "Found Items" : showOnlyLost ? "Lost Items" : "Lost & Found Items"}
+          </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Browse and manage all reported lost and found items.
+            {showOnlyFound
+              ? "Browse all reported found items — claim one if it's yours."
+              : showOnlyLost
+              ? "Browse all reported lost items."
+              : "Browse and manage all reported lost and found items."}
           </p>
         </div>
         <Suspense>

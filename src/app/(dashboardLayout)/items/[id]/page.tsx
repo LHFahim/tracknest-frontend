@@ -31,15 +31,26 @@ export default async function ItemViewPage({
 
   // Check if this user already has an active claim on this found item
   const existingClaim = claimsResult.data?.items?.find(
-    (c) =>
-      c.foundItemId === id &&
-      c.status !== ClaimStatus.CANCELED
+    (c) => c.foundItemId === id && c.status !== ClaimStatus.CANCELED
   );
+
+  // For normal users, fetch their lost items so they can link a claim to one
+  let myLostItems: { id: string; title: string }[] = [];
+  if (role === "NORMAL_USER") {
+    const lostRes = await itemService.getAllLostItems({ pageSize: 100 });
+    myLostItems = (lostRes.data?.items ?? []).map((i) => ({ id: i.id, title: i.title }));
+  }
 
   return (
     <div className="flex flex-col gap-6">
       <Breadcrumb title={item.title} />
-      <ItemDetail item={item} role={role} userId={userId} existingClaimId={existingClaim?.id} />
+      <ItemDetail
+        item={item}
+        role={role}
+        userId={userId}
+        existingClaimId={existingClaim?.id}
+        myLostItems={myLostItems}
+      />
     </div>
   );
 }

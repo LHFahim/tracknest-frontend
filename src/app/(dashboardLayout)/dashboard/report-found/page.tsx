@@ -1,8 +1,17 @@
 import { ReportFoundForm } from "@/components/modules/items/ReportFoundForm";
 import { categoryService } from "@/services/category.service";
+import { userService } from "@/services/user.service";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function ReportFoundPage() {
+  const { data: session } = await userService.getSession();
+  if (session?.user?.role === "NORMAL_USER") {
+    redirect("/dashboard");
+  }
+
   const { data: categories } = await categoryService.getAllCategories();
 
   return (
