@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   BadgeCheck,
-  BrainCircuit,
+  Target,
   CheckCircle2,
   ClipboardCheck,
   Database,
@@ -31,10 +31,10 @@ const features = [
     icon: ClipboardCheck,
   },
   {
-    title: "AI-Assisted Matching",
+    title: "Smart Matching",
     description:
-      "The system can support matching by comparing item category, color, brand, location, date, and description similarity.",
-    icon: BrainCircuit,
+      "The system supports matching by comparing item category, color, brand, location, date, and description similarity using a weighted scoring engine.",
+    icon: Target,
   },
   {
     title: "Secure Claim Review",
@@ -325,7 +325,7 @@ export default function AboutPage() {
               <p className="mt-3 text-sm leading-7 text-muted-foreground">
                 This project demonstrates authentication, role-based dashboards,
                 CRUD operations, claim workflows, admin review, handover
-                tracking, API integration, and AI-assisted matching concepts.
+                tracking, API integration, and rule-based matching concepts.
               </p>
             </div>
           </div>
@@ -357,21 +357,21 @@ export default function AboutPage() {
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
             <div>
               <p className="text-sm font-medium text-primary">
-                AI-Assisted Support
+                Rule-Based Support
               </p>
               <h2 className="mt-2 text-3xl font-bold tracking-tight">
                 Matching support without replacing human judgement
               </h2>
               <p className="mt-4 text-base leading-8 text-muted-foreground">
-                TrackNest can include an AI-assisted matching section that helps
-                compare lost and found item reports. It can use simple matching
+                TrackNest includes a smart matching section that helps compare
+                lost and found item reports. It uses transparent matching
                 signals such as category, color, brand, location, date, title,
                 and description similarity. This helps users and staff find
                 possible matches faster.
               </p>
 
               <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
-                AI support is used as a recommendation helper only. Final claim
+                Match scores are a recommendation helper only. Final claim
                 approval and item handover decisions should always be made by
                 authorised staff or administrators.
               </div>
@@ -381,7 +381,7 @@ export default function AboutPage() {
               <div className="mb-5 flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">
-                    AI Matching Assistant
+                    Smart Matching Assistant
                   </p>
                   <h3 className="text-xl font-semibold">Possible Match Score</h3>
                 </div>

@@ -70,7 +70,7 @@ export default function Footer() {
             <p className="mt-4 text-sm leading-6 text-muted-foreground">
               TrackNest is developed as a university capstone web application
               focused on authentication, role-based access, item reporting,
-              claims, handovers, and AI-assisted matching support.
+              claims, handovers, and smart matching support.
             </p>
 
             <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">

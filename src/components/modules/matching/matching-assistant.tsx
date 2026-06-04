@@ -2,7 +2,6 @@ import Link from "next/link";
 import {
   AlertTriangle,
   ArrowRight,
-  BrainCircuit,
   CalendarDays,
   CheckCircle2,
   FileSearch,
@@ -10,15 +9,14 @@ import {
   MapPin,
   PackageSearch,
   SearchCheck,
-  Sparkles,
   Target,
 } from "lucide-react";
 
-import { AIMatchResult } from "@/lib/ai-matching";
+import { MatchResult } from "@/lib/matching";
 import { IFoundItem, ILostItem } from "@/types/item.interface";
 
-interface AIMatchingAssistantProps {
-  matches: AIMatchResult[];
+interface MatchingAssistantProps {
+  matches: MatchResult[];
   lostItems: ILostItem[];
   foundItems: IFoundItem[];
 }
@@ -78,11 +76,11 @@ function formatDate(value?: string) {
   });
 }
 
-export default function AIMatchingAssistant({
+export default function MatchingAssistant({
   matches,
   lostItems,
   foundItems,
-}: AIMatchingAssistantProps) {
+}: MatchingAssistantProps) {
   const topMatch = matches[0];
   const highMatches = matches.filter((match) => match.matchScore >= 70).length;
   const mediumMatches = matches.filter(
@@ -95,12 +93,12 @@ export default function AIMatchingAssistant({
         <div className="grid gap-8 p-6 lg:grid-cols-[1.15fr_0.85fr] lg:p-8">
           <div>
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-muted-foreground">
-              <Sparkles className="h-4 w-4 text-primary" />
-              AI-Assisted Support
+              <Target className="h-4 w-4 text-primary" />
+              Rule-Based Matching
             </div>
 
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              AI Matching Assistant
+              Smart Matching Assistant
             </h1>
 
             <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
@@ -113,9 +111,9 @@ export default function AIMatchingAssistant({
               <div className="flex gap-3">
                 <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
                 <p>
-                  AI support is used as a recommendation helper only. Final
-                  claim approval and item handover decisions should always be
-                  made by authorised staff or administrators.
+                  Match scores are a recommendation helper only. Final claim
+                  approval and item handover decisions should always be made by
+                  authorised staff or administrators.
                 </p>
               </div>
             </div>
@@ -140,7 +138,7 @@ export default function AIMatchingAssistant({
               </div>
               <p className="mt-2 text-3xl font-bold">{foundItems.length}</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Found item records checked by assistant
+                Found item records checked
               </p>
             </div>
 
@@ -168,9 +166,9 @@ export default function AIMatchingAssistant({
               </div>
 
               <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                The assistant uses an explainable scoring approach. Each field
-                contributes points to the final match score, so staff can clearly
-                understand why a match was suggested.
+                The assistant uses an explainable, weighted scoring approach.
+                Each field contributes points to the final match score, so staff
+                can clearly understand why a match was suggested.
               </p>
             </div>
 
@@ -194,8 +192,8 @@ export default function AIMatchingAssistant({
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="mb-2 inline-flex items-center gap-2 text-sm font-medium text-primary">
-                <BrainCircuit className="h-4 w-4" />
-                Top AI Recommendation
+                <Target className="h-4 w-4" />
+                Top Recommendation
               </div>
 
               <h2 className="text-2xl font-bold">
@@ -264,8 +262,8 @@ export default function AIMatchingAssistant({
               <div className="flex flex-col gap-5 border-b border-border bg-muted/30 p-6 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <BrainCircuit className="h-4 w-4 text-primary" />
-                    AI Match Suggestion
+                    <SearchCheck className="h-4 w-4 text-primary" />
+                    Match Suggestion
                   </div>
 
                   <h2 className="mt-2 text-2xl font-bold">

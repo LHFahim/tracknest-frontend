@@ -1,10 +1,10 @@
-import AIMatchingAssistant from "@/components/modules/ai/ai-matching-assistant";
-import { generateAIMatches } from "@/lib/ai-matching";
+import MatchingAssistant from "@/components/modules/matching/matching-assistant";
+import { generateMatches } from "@/lib/matching";
 import { itemService } from "@/services/item.service";
 
 export const dynamic = "force-dynamic";
 
-export default async function AIMatchingPage() {
+export default async function MatchingPage() {
   const [lostItemsResult, foundItemsResult] = await Promise.all([
     itemService.getAllLostItems({ pageSize: 50 }),
     itemService.getAllFoundItems({ pageSize: 50 }),
@@ -13,7 +13,7 @@ export default async function AIMatchingPage() {
   const lostItems = lostItemsResult.data?.items ?? [];
   const foundItems = foundItemsResult.data?.items ?? [];
 
-  const matches = generateAIMatches(lostItems, foundItems);
+  const matches = generateMatches(lostItems, foundItems);
 
   return (
     <div className="space-y-6">
@@ -24,7 +24,7 @@ export default async function AIMatchingPage() {
         </div>
       )}
 
-      <AIMatchingAssistant
+      <MatchingAssistant
         matches={matches}
         lostItems={lostItems}
         foundItems={foundItems}

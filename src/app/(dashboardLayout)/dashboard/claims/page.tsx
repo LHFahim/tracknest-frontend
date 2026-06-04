@@ -1,9 +1,9 @@
 import { ReviewClaimButton } from "@/components/modules/claims/ReviewClaimButton";
 import { Badge } from "@/components/ui/badge";
 import { claimService } from "@/services/claim.service";
-import { ClaimStatus } from "@/types/claim.interface";
+import { ClaimStatus, IClaim } from "@/types/claim.interface";
 import Link from "next/link";
-import { SparklesIcon } from "lucide-react";
+import { Target } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +24,7 @@ export default async function AdminClaimsPage() {
   const { data, error } = await claimService.adminGetAllClaims();
 
   // Group claims by foundItemId
-  const grouped = new Map<string, typeof data.items>();
+  const grouped = new Map<string, IClaim[]>();
   for (const claim of data?.items ?? []) {
     const group = grouped.get(claim.foundItemId) ?? [];
     group.push(claim);
@@ -72,14 +72,14 @@ export default async function AdminClaimsPage() {
                     </Badge>
                   </div>
 
-                  {/* AI matching banner when multiple active claims compete */}
+                  {/* Smart matching banner when multiple active claims compete */}
                   {hasMultipleActive && (
                     <Link
-                      href="/dashboard/ai-matching"
+                      href="/dashboard/matching"
                       className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-100 dark:border-violet-800 dark:bg-violet-950/40 dark:text-violet-300 dark:hover:bg-violet-950/60"
                     >
-                      <SparklesIcon className="h-3.5 w-3.5" />
-                      {activeCount} competing claims — use AI Matching
+                      <Target className="h-3.5 w-3.5" />
+                      {activeCount} competing claims — use Smart Matching
                     </Link>
                   )}
                 </div>

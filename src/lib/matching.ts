@@ -8,7 +8,7 @@ export type MatchSignal = {
   explanation: string;
 };
 
-export type AIMatchResult = {
+export type MatchResult = {
   id: string;
   lostItem: ILostItem;
   foundItem: IFoundItem;
@@ -252,7 +252,7 @@ function compareItemPair(lostItem: ILostItem, foundItem: IFoundItem) {
   const totalScore = signals.reduce((total, signal) => total + signal.score, 0);
   const matchScore = Math.min(100, Math.max(0, totalScore));
 
-  const matchLevel: AIMatchResult["matchLevel"] =
+  const matchLevel: MatchResult["matchLevel"] =
     matchScore >= 70 ? "High" : matchScore >= 40 ? "Medium" : "Low";
 
   const summary =
@@ -273,10 +273,10 @@ function compareItemPair(lostItem: ILostItem, foundItem: IFoundItem) {
   };
 }
 
-export function generateAIMatches(
+export function generateMatches(
   lostItems: ILostItem[],
   foundItems: IFoundItem[]
-): AIMatchResult[] {
+): MatchResult[] {
   const matches = lostItems.flatMap((lostItem) =>
     foundItems.map((foundItem) => compareItemPair(lostItem, foundItem))
   );
