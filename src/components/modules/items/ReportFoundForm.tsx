@@ -188,27 +188,6 @@ export function ReportFoundForm({ categories }: ReportFoundFormProps) {
               }}
             </form.Field>
 
-            {/* Custody Type */}
-            <form.Field name="custodyType">
-              {(field) => (
-                <Field>
-                  <FieldLabel>Currently with *</FieldLabel>
-                  <Select
-                    value={field.state.value}
-                    onValueChange={(v) => field.handleChange(v as "USER" | "OFFICE")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="OFFICE">Office / Lost & Found desk</SelectItem>
-                      <SelectItem value="USER">With me (I'll hand it over)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Field>
-              )}
-            </form.Field>
-
             {/* Location Found */}
             <form.Field name="locationFound">
               {(field) => (
