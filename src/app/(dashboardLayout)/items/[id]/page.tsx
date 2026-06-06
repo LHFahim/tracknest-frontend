@@ -1,6 +1,6 @@
 import { ItemDetail } from "@/components/modules/items/ItemDetail";
-import { itemService } from "@/services/item.service";
 import { claimService } from "@/services/claim.service";
+import { itemService } from "@/services/item.service";
 import { userService } from "@/services/user.service";
 import { ClaimStatus } from "@/types/claim.interface";
 import Link from "next/link";
@@ -31,14 +31,17 @@ export default async function ItemViewPage({
 
   // Check if this user already has an active claim on this found item
   const existingClaim = claimsResult.data?.items?.find(
-    (c) => c.foundItemId === id && c.status !== ClaimStatus.CANCELED
+    (c) => c.foundItemId === id && c.status !== ClaimStatus.CANCELED,
   );
 
   // For normal users, fetch their lost items so they can link a claim to one
   let myLostItems: { id: string; title: string }[] = [];
   if (role === "NORMAL_USER") {
     const lostRes = await itemService.getAllLostItems({ pageSize: 100 });
-    myLostItems = (lostRes.data?.items ?? []).map((i) => ({ id: i.id, title: i.title }));
+    myLostItems = (lostRes.data?.items ?? []).map((i) => ({
+      id: i.id,
+      title: i.title,
+    }));
   }
 
   return (

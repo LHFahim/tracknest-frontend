@@ -124,17 +124,12 @@ export function ItemDetail({
   const dateLabel = lost ? "Date Lost" : "Date Found";
   const dateValue = lost ? item.dateLost : item.dateFound;
   const locationLabel = lost ? "Location Lost" : "Location Found";
-  const locationValue = lost
-    ? item.locationLost
-    : item.locationFound;
+  const locationValue = lost ? item.locationLost : item.locationFound;
 
   // Primary image(s)
-  const primaryImage = lost
-    ? item.imageURL
-    : item.images?.[0];
-  const extraImages = !lost && item.images?.length > 1
-    ? item.images.slice(1)
-    : [];
+  const primaryImage = lost ? item.imageURL : item.images?.[0];
+  const extraImages =
+    !lost && item.images?.length > 1 ? item.images.slice(1) : [];
 
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
@@ -294,14 +289,15 @@ export function ItemDetail({
         )}
 
         {/* Lost item status transitions */}
-        {lost && item.status === LostItemStatus.OPEN && (
+        {/* NOTE: request claim button shouldn't be shown to lost item report itself */}
+        {/* {lost && item.status === LostItemStatus.OPEN && (
           <Button
             onClick={() => handleLostStatus(LostItemStatus.CLAIM_REQUESTED)}
             disabled={isLoading}
           >
             Request Claim
           </Button>
-        )}
+        )} */}
         {lost && item.status === LostItemStatus.CLAIM_REQUESTED && (
           <>
             <Button
@@ -330,43 +326,57 @@ export function ItemDetail({
         )}
 
         {/* Found item — claim button for regular users */}
-        {!lost && role === "NORMAL_USER" && !isOwner && item.status === FoundItemStatus.REPORTED && (
-          existingClaimId ? (
+        {!lost &&
+          role === "NORMAL_USER" &&
+          !isOwner &&
+          item.status === FoundItemStatus.REPORTED &&
+          (existingClaimId ? (
             <Button asChild variant="outline">
               <Link href={`/dashboard/my-claims/${existingClaimId}`}>
                 View My Claim
               </Link>
             </Button>
           ) : (
-            <ClaimButton foundItemId={item.id} itemTitle={item.title} myLostItems={myLostItems} />
-          )
-        )}
+            <ClaimButton
+              foundItemId={item.id}
+              itemTitle={item.title}
+              myLostItems={myLostItems}
+            />
+          ))}
 
         {/* Found item status transitions for admin/staff */}
-        {!lost && role !== "NORMAL_USER" && item.status === FoundItemStatus.REPORTED && (
-          <Button
-            onClick={() => handleFoundStatus(FoundItemStatus.IN_CUSTODY)}
-            disabled={isLoading}
-          >
-            Mark In Custody
-          </Button>
-        )}
-        {!lost && role !== "NORMAL_USER" && item.status === FoundItemStatus.IN_CUSTODY && (
-          <Button
-            onClick={() => handleFoundStatus(FoundItemStatus.READY_FOR_HANDOVER)}
-            disabled={isLoading}
-          >
-            Ready for Handover
-          </Button>
-        )}
-        {!lost && role !== "NORMAL_USER" && item.status === FoundItemStatus.READY_FOR_HANDOVER && (
-          <Button
-            onClick={() => handleFoundStatus(FoundItemStatus.RETURNED)}
-            disabled={isLoading}
-          >
-            Mark Returned
-          </Button>
-        )}
+        {!lost &&
+          role !== "NORMAL_USER" &&
+          item.status === FoundItemStatus.REPORTED && (
+            <Button
+              onClick={() => handleFoundStatus(FoundItemStatus.IN_CUSTODY)}
+              disabled={isLoading}
+            >
+              Mark In Custody
+            </Button>
+          )}
+        {!lost &&
+          role !== "NORMAL_USER" &&
+          item.status === FoundItemStatus.IN_CUSTODY && (
+            <Button
+              onClick={() =>
+                handleFoundStatus(FoundItemStatus.READY_FOR_HANDOVER)
+              }
+              disabled={isLoading}
+            >
+              Ready for Handover
+            </Button>
+          )}
+        {!lost &&
+          role !== "NORMAL_USER" &&
+          item.status === FoundItemStatus.READY_FOR_HANDOVER && (
+            <Button
+              onClick={() => handleFoundStatus(FoundItemStatus.RETURNED)}
+              disabled={isLoading}
+            >
+              Mark Returned
+            </Button>
+          )}
 
         {role !== "NORMAL_USER" && (
           <Button

@@ -5,7 +5,10 @@ import { LostItemStatus } from "@/types/item.interface";
 import { PencilIcon } from "lucide-react";
 import Link from "next/link";
 
-const statusVariant: Record<LostItemStatus, "default" | "secondary" | "destructive" | "outline"> = {
+const statusVariant: Record<
+  LostItemStatus,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   [LostItemStatus.OPEN]: "default",
   [LostItemStatus.CLAIM_REQUESTED]: "secondary",
   [LostItemStatus.CLAIM_APPROVED]: "outline",
@@ -20,7 +23,9 @@ export default async function MyLostItemsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">My Lost Reports</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            My Lost Reports
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Items you have reported as lost
           </p>
@@ -38,7 +43,9 @@ export default async function MyLostItemsPage() {
 
       {data && data.items.length === 0 && (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-          <p className="text-muted-foreground">You haven&apos;t reported any lost items yet.</p>
+          <p className="text-muted-foreground">
+            You haven&apos;t reported any lost items yet.
+          </p>
           <Button asChild className="mt-4">
             <Link href="/dashboard/report-lost">Report a Lost Item</Link>
           </Button>
@@ -66,7 +73,10 @@ export default async function MyLostItemsPage() {
                   <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-primary">
                     {item.title}
                   </h3>
-                  <Badge variant={statusVariant[item.status]} className="shrink-0 text-xs">
+                  <Badge
+                    variant={statusVariant[item.status]}
+                    className="shrink-0 text-xs"
+                  >
                     {item.status.replace(/_/g, " ")}
                   </Badge>
                 </div>
@@ -82,7 +92,9 @@ export default async function MyLostItemsPage() {
                   })}
                 </p>
                 {item.locationLost && (
-                  <p className="text-xs text-muted-foreground">{item.locationLost}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.locationLost}
+                  </p>
                 )}
               </Link>
             </div>
