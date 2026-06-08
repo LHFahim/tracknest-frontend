@@ -129,14 +129,6 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
               }}
             />
           </FieldGroup>
-          <div className="mt-2 text-right">
-            <Link
-              href="/forgot-password"
-              className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
-            >
-              Forgot password?
-            </Link>
-          </div>
         </form>
       </CardContent>
       <CardFooter className="flex flex-col gap-4">

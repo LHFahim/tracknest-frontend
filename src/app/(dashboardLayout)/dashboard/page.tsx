@@ -14,7 +14,6 @@ import {
   SearchCheck,
   Tag,
   BarChart3,
-  ShieldAlert,
   Eye,
 } from "lucide-react";
 
@@ -166,12 +165,6 @@ async function AdminDashboard({ name }: { name: string }) {
             description="Platform stats and recovery metrics"
             href="/dashboard/analytics"
             icon={BarChart3}
-          />
-          <ActionCard
-            title="Security"
-            description="Audit logs and access controls"
-            href="/dashboard/security"
-            icon={ShieldAlert}
           />
         </div>
       </div>
