@@ -3,18 +3,18 @@ import { ArrowRight, PackageSearch, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 function scoreBadgeClass(score: number) {
-  if (score >= 80) {
+  if (score >= 92) {
     return "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300";
   }
-  if (score >= 70) {
+  if (score >= 88) {
     return "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300";
   }
   return "bg-muted text-muted-foreground";
 }
 
 function scoreLabel(score: number) {
-  if (score >= 80) return "Strong match";
-  if (score >= 70) return "Likely match";
+  if (score >= 92) return "Strong match";
+  if (score >= 88) return "Likely match";
   return "Possible match";
 }
 

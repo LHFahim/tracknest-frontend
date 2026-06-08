@@ -6,6 +6,10 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
+// Gemini embeddings sit in a compressed similarity band (~80–98%), so anything
+// in the low 80s is effectively baseline noise. Only surface confident matches.
+const MIN_SCORE = 85;
+
 export default async function LostItemMatchesPage({
   params,
 }: {
@@ -19,7 +23,7 @@ export default async function LostItemMatchesPage({
   ]);
 
   const lostItem = lostRes.data;
-  const matches = matchesRes.data ?? [];
+  const matches = (matchesRes.data ?? []).filter((m) => m.score >= MIN_SCORE);
 
   return (
     <div className="space-y-6 max-w-3xl">
