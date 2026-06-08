@@ -1,12 +1,32 @@
 import HeroSection from "@/components/modules/home/hero-section";
 import { claimService } from "@/services/claim.service";
 import { itemService } from "@/services/item.service";
+import { userService } from "@/services/user.service";
 import { ClaimStatus } from "@/types/claim.interface";
 import { FoundItemStatus } from "@/types/item.interface";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  const sessionRes = await userService.getSession();
+  const isLoggedIn = !!sessionRes.data?.user;
+
+  // Logged-out visitors: show the marketing experience (no auth-protected stats).
+  if (!isLoggedIn) {
+    return (
+      <main>
+        <HeroSection
+          isLoggedIn={false}
+          totalLostItems={0}
+          totalFoundItems={0}
+          matchedCases={0}
+          recoveryRate={0}
+          recentActivities={[]}
+        />
+      </main>
+    );
+  }
+
   const [lostItemsResult, foundItemsResult, claimsResult] = await Promise.all([
     itemService.getAllLostItems({ pageSize: 5 }),
     itemService.getAllFoundItems({ pageSize: 5 }),
@@ -22,8 +42,6 @@ export default async function HomePage() {
 
   const totalFoundItems =
     foundItemsResult.data?.pagination?.total ?? foundItems.length;
-
-  const totalClaims = claimsResult.data?.pagination?.total ?? claims.length;
 
   const approvedClaims = claims.filter(
     (claim) => claim.status === ClaimStatus.APPROVED
@@ -62,6 +80,7 @@ export default async function HomePage() {
   return (
     <main>
       <HeroSection
+        isLoggedIn
         totalLostItems={totalLostItems}
         totalFoundItems={totalFoundItems}
         matchedCases={matchedCases}
