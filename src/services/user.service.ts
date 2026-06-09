@@ -30,7 +30,7 @@ export const userService = {
 
       const user = await res.json();
 
-      // /profile/me (ProfileDto) omits panelType — read it from the panel_type
+      // /profile/me (ProfileDto) omits panelType - read it from the panel_type
       // cookie that was stored during login/register from the full AuthResponseDto.
       const cookieStore = await cookies();
       const panelType = cookieStore.get("panel_type")?.value ?? user.panelType ?? "";

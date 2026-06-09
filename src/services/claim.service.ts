@@ -12,7 +12,7 @@ async function getBearerToken(): Promise<string | null> {
 }
 
 export const claimService = {
-  // ─── Regular user ─────────────────────────────────────────────────────────
+  // Regular user
 
   createClaim: async (payload: {
     foundItemId: string;
@@ -118,7 +118,7 @@ export const claimService = {
     }
   },
 
-  // ─── Admin ────────────────────────────────────────────────────────────────
+  // Admin
 
   adminGetAllClaims: async (): Promise<{
     data: IClaimPaginated | null;

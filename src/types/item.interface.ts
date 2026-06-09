@@ -3,7 +3,7 @@ export interface GPSLocation {
   longitude: number;
 }
 
-// ─── Lost Item ────────────────────────────────────────────────────────────────
+// Lost Item
 
 export enum LostItemStatus {
   OPEN = "OPEN",
@@ -32,7 +32,7 @@ export interface ILostItem {
   updatedAt?: string;
 }
 
-// ─── Found Item ───────────────────────────────────────────────────────────────
+// Found Item
 
 export enum FoundItemStatus {
   REPORTED = "REPORTED",
@@ -70,7 +70,7 @@ export interface IFoundItem {
   updatedAt?: string;
 }
 
-// ─── AI Matching ──────────────────────────────────────────────────────────────
+// AI Matching
 
 /** A single AI-suggested found-item match for a given lost report.
  *  Mirrors the backend AIMatchResponseDto (Gemini embedding + cosine similarity). */
@@ -84,10 +84,10 @@ export interface IAIMatch {
   locationFound?: string;
   dateFound: string; // ISO 8601 date string
   images: string[];
-  score: number; // 0–100 similarity score
+  score: number; // 0-100 similarity score
 }
 
-// ─── Shared ───────────────────────────────────────────────────────────────────
+// Shared
 
 export interface IPagination {
   total: number;
@@ -101,7 +101,7 @@ export interface IPaginatedResponse<T> {
   pagination: IPagination;
 }
 
-/** Type guard — distinguishes lost from found items at runtime */
+// Type guard to tell lost and found items apart at runtime
 export function isLostItem(item: ILostItem | IFoundItem): item is ILostItem {
   return "dateLost" in item;
 }

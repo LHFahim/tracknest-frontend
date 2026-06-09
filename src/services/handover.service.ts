@@ -12,7 +12,7 @@ async function getBearerToken(): Promise<string | null> {
 }
 
 export const handoverService = {
-  // ─── Regular user ─────────────────────────────────────────────────────────
+  // Regular user
 
   getMyHandovers: async (): Promise<{
     data: IHandoverPaginated | null;
@@ -59,7 +59,7 @@ export const handoverService = {
     }
   },
 
-  // ─── Admin ────────────────────────────────────────────────────────────────
+  // Admin
 
   adminGetAllHandovers: async (): Promise<{
     data: IHandoverPaginated | null;

@@ -5,7 +5,7 @@ import { handoverService } from "@/services/handover.service";
 import { userService } from "@/services/user.service";
 import { revalidateTag } from "next/cache";
 
-// ─── Claims ───────────────────────────────────────────────────────────────────
+// Claims
 
 export async function reviewClaim(
   claimId: string,
@@ -18,7 +18,7 @@ export async function reviewClaim(
   return result;
 }
 
-// ─── Handovers ────────────────────────────────────────────────────────────────
+// Handovers
 
 export async function createHandover(payload: {
   foundItem: string;
@@ -33,7 +33,7 @@ export async function createHandover(payload: {
   return result;
 }
 
-// ─── Users ────────────────────────────────────────────────────────────────────
+// Users
 
 export async function deleteUser(userId: string) {
   const result = await userService.deleteUser(userId);

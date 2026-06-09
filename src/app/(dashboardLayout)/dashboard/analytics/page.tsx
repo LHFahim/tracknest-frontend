@@ -22,7 +22,7 @@ import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-// ─── Stat card ────────────────────────────────────────────────────────────────
+// Stat card
 
 function StatCard({
   label,
@@ -49,7 +49,7 @@ function StatCard({
   );
 }
 
-// ─── Breakdown bar ────────────────────────────────────────────────────────────
+// Breakdown bar
 
 function BreakdownBar({
   label,
@@ -81,7 +81,7 @@ function BreakdownBar({
   );
 }
 
-// ─── Section card ─────────────────────────────────────────────────────────────
+// Section card
 
 function SectionCard({
   title,
@@ -98,7 +98,7 @@ function SectionCard({
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// Page
 
 export default async function AnalyticsPage() {
   const { data: session } = await userService.getSession();

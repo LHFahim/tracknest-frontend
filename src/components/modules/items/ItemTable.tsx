@@ -143,7 +143,7 @@ export function ItemTable({
           ) : (
             allItems.map((item) => {
               const lost = isLostItem(item);
-              // ISO date string from backend — e.g. "2024-01-15T00:00:00.000Z"
+              // ISO date string from backend - e.g. "2024-01-15T00:00:00.000Z"
               const dateStr = lost ? item.dateLost : item.dateFound;
               const location = lost ? item.locationLost : item.locationFound;
 

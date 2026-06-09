@@ -72,7 +72,7 @@ export function ClaimButton({
     );
   }
 
-  // User hasn't reported any lost items yet — block claim
+  // User hasn't reported any lost items yet - block claim
   if (!open && myLostItems.length === 0) {
     return (
       <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">

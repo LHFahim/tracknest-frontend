@@ -111,7 +111,7 @@ export function CreateHandoverForm({ foundItems, approvedClaims, users, onSucces
             }}
           </form.Field>
 
-          {/* Recipient — auto-filled from approved claim */}
+          {/* Recipient - auto-filled from approved claim */}
           <form.Field name="receivedByUser">
             {(field) => {
               const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
@@ -119,7 +119,7 @@ export function CreateHandoverForm({ foundItems, approvedClaims, users, onSucces
                 <Field data-invalid={isInvalid}>
                   <FieldLabel htmlFor={field.name}>Recipient *</FieldLabel>
                   {selectedFoundItemId && claimant ? (
-                    // Auto-filled from approved claim — show as read-only
+                    // Auto-filled from approved claim - show as read-only
                     <div className={`${selectClass} bg-muted/40 cursor-not-allowed`}>
                       {claimant.firstName} {claimant.lastName} — {claimant.email}
                       <input type="hidden" value={claimant.id} />

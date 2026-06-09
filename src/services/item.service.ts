@@ -20,7 +20,7 @@ async function getBearerToken(): Promise<string | null> {
 }
 
 export const itemService = {
-  // ─── Lost Items ─────────────────────────────────────────────────────────────
+  // Lost Items
 
   getAllLostItems: async (params?: { search?: string; page?: number; pageSize?: number }) => {
     try {
@@ -152,7 +152,7 @@ export const itemService = {
     }
   },
 
-  // ─── AI Matching (Gemini embeddings) ─────────────────────────────────────────
+  // AI Matching (Gemini embeddings)
 
   getLostItemAIMatches: async (
     id: string
@@ -181,7 +181,7 @@ export const itemService = {
     }
   },
 
-  // ─── Found Items ─────────────────────────────────────────────────────────────
+  // Found Items
 
   getAllFoundItems: async (params?: { search?: string; page?: number; pageSize?: number }) => {
     try {
@@ -316,7 +316,7 @@ export const itemService = {
     }
   },
 
-  // ─── Create items ────────────────────────────────────────────────────────────
+  // Create items
 
   createLostItem: async (payload: {
     title: string;
@@ -337,7 +337,7 @@ export const itemService = {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        // Backend service unconditionally reads gpsLocation.latitude —
+        // Backend service unconditionally reads gpsLocation.latitude -
         // send zero coords as fallback when user doesn't provide GPS.
         body: JSON.stringify({
           ...payload,
@@ -399,7 +399,7 @@ export const itemService = {
     }
   },
 
-  // ─── Unified lookup by ID (tries lost first, then found) ────────────────────
+  // Unified lookup by ID (tries lost first, then found)
 
   getItemById: async (id: string) => {
     const lostRes = await itemService.getLostItemById(id);

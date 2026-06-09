@@ -12,7 +12,7 @@ async function getBearerToken(): Promise<string | null> {
 }
 
 export const categoryService = {
-  // ─── Public / regular user ────────────────────────────────────────────────
+  // Public / regular user
 
   getAllCategories: async (): Promise<{
     data: ICategory[] | null;
@@ -41,7 +41,7 @@ export const categoryService = {
     }
   },
 
-  // ─── Admin CRUD ───────────────────────────────────────────────────────────
+  // Admin CRUD
 
   adminGetAllCategories: async (): Promise<{
     data: ICategory[] | null;

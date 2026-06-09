@@ -75,7 +75,7 @@ export function EditProfileForm({ initialValues }: EditProfileFormProps) {
       className="space-y-4"
     >
       <FieldGroup>
-        {/* Email — read only */}
+        {/* Email - read only */}
         <Field>
           <FieldLabel>Email</FieldLabel>
           <Input

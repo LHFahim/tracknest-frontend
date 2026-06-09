@@ -20,7 +20,7 @@ import {
   Eye,
 } from "lucide-react";
 
-// ─── Shared stat card ────────────────────────────────────────────────────────
+// Shared stat card
 
 function StatCard({
   label,
@@ -51,7 +51,7 @@ function StatCard({
   );
 }
 
-// ─── Quick-action card ────────────────────────────────────────────────────────
+// Quick-action card
 
 function ActionCard({
   title,
@@ -80,7 +80,7 @@ function ActionCard({
   );
 }
 
-// ─── Role dashboards ──────────────────────────────────────────────────────────
+// Role dashboards
 
 async function AdminDashboard({ name }: { name: string }) {
   const [lostRes, foundRes, claimsRes, handoversRes] = await Promise.all([
@@ -305,7 +305,7 @@ function UserDashboard({ name }: { name: string }) {
   );
 }
 
-// ─── Page entry point ─────────────────────────────────────────────────────────
+// Page entry point
 
 export default async function DashboardPage() {
   const { data } = await userService.getSession();

@@ -20,7 +20,7 @@ export default async function CategoriesPage() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
-        {/* Left — category list */}
+        {/* Left - category list */}
         <div className="space-y-3">
           {error && (
             <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
@@ -107,7 +107,7 @@ export default async function CategoriesPage() {
           )}
         </div>
 
-        {/* Right — create form */}
+        {/* Right - create form */}
         <Card className="h-fit">
           <CardHeader>
             <CardTitle className="text-base">New Category</CardTitle>

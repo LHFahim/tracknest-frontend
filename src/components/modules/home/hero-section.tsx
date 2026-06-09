@@ -178,7 +178,7 @@ export default function HeroSection({
             </div>
           </div>
 
-          {/* Right panel — live overview when logged in, "how it works" when not */}
+          {/* Right panel - live overview when logged in, "how it works" when not */}
           {isLoggedIn ? (
             <div className="relative">
               <div className="relative rounded-3xl border border-border bg-background/90 p-6 shadow-2xl backdrop-blur">

@@ -86,7 +86,7 @@ export default async function ItemsPage({
   const role = sessionRes.data?.user?.role as string | undefined;
   const isAdminOrStaff = role === "ADMIN" || role === "STAFF";
 
-  // ── Staff / Admin: show ALL lost + ALL found in two separate sections ─────────
+  // Staff / Admin: show ALL lost + ALL found in two separate sections
   if (isAdminOrStaff) {
     const [lostRes, foundRes] = await Promise.all([
       itemService.getAllLostItems({ search, page, pageSize: PAGE_SIZE }),
@@ -156,7 +156,7 @@ export default async function ItemsPage({
     );
   }
 
-  // ── Normal User: their own lost reports, or browse found items for claiming ───
+  // Normal User: their own lost reports, or browse found items for claiming
   const showFound = type === "found";
 
   const [lostRes, foundRes] = await Promise.all([

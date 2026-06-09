@@ -120,7 +120,7 @@ export function ItemDetail({
     }
   };
 
-  // Derive display values — ISO date string from backend
+  // Derive display values - ISO date string from backend
   const dateLabel = lost ? "Date Lost" : "Date Found";
   const dateValue = lost ? item.dateLost : item.dateFound;
   const locationLabel = lost ? "Location Lost" : "Location Found";
@@ -183,7 +183,7 @@ export function ItemDetail({
           <Separator />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            {/* Date — ISO string formatted for display */}
+            {/* Date - ISO string formatted for display */}
             <div className="flex items-center gap-2 text-muted-foreground">
               <CalendarIcon className="size-4 shrink-0" />
               <span>
@@ -278,7 +278,7 @@ export function ItemDetail({
           Back to Items
         </Button>
 
-        {/* Edit button — shown to owner */}
+        {/* Edit button - shown to owner */}
         {isOwner && (
           <Button asChild variant="outline" disabled={isLoading}>
             <Link href={editHref}>
@@ -325,7 +325,7 @@ export function ItemDetail({
           </Button>
         )}
 
-        {/* Found item — claim button for regular users */}
+        {/* Found item - claim button for regular users */}
         {!lost &&
           role === "NORMAL_USER" &&
           !isOwner &&
